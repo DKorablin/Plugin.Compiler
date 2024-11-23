@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="SettingsDataSet" targetNamespace="http://alphaomega.somee.com/SettingsDataSet.xsd" xmlns:mstns="http://alphaomega.somee.com/SettingsDataSet.xsd" xmlns="http://alphaomega.somee.com/SettingsDataSet.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="NotPublic" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections />
+        <Tables />
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="SettingsDataSet" msdata:IsDataSet="true" msdata:Locale="" msprop:EnableTableAdapterManager="true" msprop:Generator_DataSetName="SettingsDataSet" msprop:Generator_UserDSName="SettingsDataSet">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="PluginTable" msprop:Generator_UserTableName="PluginTable" msprop:Generator_RowEvArgName="PluginTableRowChangeEvent" msprop:Generator_TableVarName="tablePluginTable" msprop:Generator_TablePropName="PluginTable" msprop:Generator_RowDeletingName="PluginTableRowDeleting" msprop:Generator_RowChangingName="PluginTableRowChanging" msprop:Generator_RowDeletedName="PluginTableRowDeleted" msprop:Generator_RowEvHandlerName="PluginTableRowChangeEventHandler" msprop:Generator_TableClassName="PluginTableDataTable" msprop:Generator_RowChangedName="PluginTableRowChanged" msprop:Generator_RowClassName="PluginTableRow">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="PluginID" msdata:ReadOnly="true" msdata:AutoIncrement="true" msprop:Generator_ColumnVarNameInTable="columnPluginID" msprop:Generator_ColumnPropNameInRow="PluginID" msprop:Generator_ColumnPropNameInTable="PluginIDColumn" msprop:Generator_UserColumnName="PluginID" type="xs:int" />
+              <xs:element name="PluginName" msprop:Generator_ColumnVarNameInTable="columnPluginName" msprop:Generator_ColumnPropNameInRow="PluginName" msprop:Generator_ColumnPropNameInTable="PluginNameColumn" msprop:Generator_UserColumnName="PluginName" type="xs:string" />
+              <xs:element name="MethodName" msprop:Generator_ColumnVarNameInTable="columnMethodName" msprop:Generator_ColumnPropNameInRow="MethodName" msprop:Generator_ColumnPropNameInTable="MethodNameColumn" msprop:Generator_UserColumnName="MethodName" type="xs:string" />
+              <xs:element name="ReturnType" msprop:nullValue="_null" msprop:Generator_ColumnPropNameInRow="ReturnType" msprop:Generator_ColumnVarNameInTable="columnReturnType" msprop:Generator_ColumnPropNameInTable="ReturnTypeColumn" msprop:Generator_UserColumnName="ReturnType" type="xs:string" minOccurs="0" />
+              <xs:element name="IsFullSource" msprop:nullValue="False" msprop:Generator_ColumnPropNameInRow="IsFullSource" msprop:Generator_ColumnVarNameInTable="columnIsFullSource" msprop:Generator_ColumnPropNameInTable="IsFullSourceColumn" msprop:Generator_UserColumnName="IsFullSource" type="xs:boolean" default="false" />
+              <xs:element name="IsIncludeDebug" msprop:nullValue="False" msprop:Generator_ColumnPropNameInRow="IsIncludeDebug" msprop:Generator_ColumnVarNameInTable="columnIsIncludeDebug" msprop:Generator_ColumnPropNameInTable="IsIncludeDebugColumn" msprop:Generator_UserColumnName="IsIncludeDebug" type="xs:boolean" default="false" />
+              <xs:element name="LanguageId" msprop:Generator_ColumnVarNameInTable="columnLanguageId" msprop:Generator_ColumnPropNameInRow="LanguageId" msprop:Generator_ColumnPropNameInTable="LanguageIdColumn" msprop:Generator_UserColumnName="LanguageId" type="xs:int" />
+              <xs:element name="CompilerVersion" msprop:nullValue="v2.0" msprop:Generator_ColumnPropNameInRow="CompilerVersion" msprop:Generator_ColumnVarNameInTable="columnCompilerVersion" msprop:Generator_ColumnPropNameInTable="CompilerVersionColumn" msprop:Generator_UserColumnName="CompilerVersion" type="xs:string" default="v2.0" minOccurs="0" />
+              <xs:element name="DateSaved" msprop:Generator_ColumnVarNameInTable="columnDateSaved" msprop:Generator_ColumnPropNameInRow="DateSaved" msprop:Generator_ColumnPropNameInTable="DateSavedColumn" msprop:Generator_UserColumnName="DateSaved" type="xs:dateTime" />
+              <xs:element name="AssemblyPath" msprop:nullValue="_empty" msprop:Generator_ColumnPropNameInRow="AssemblyPath" msprop:Generator_ColumnVarNameInTable="columnAssemblyPath" msprop:Generator_ColumnPropNameInTable="AssemblyPathColumn" msprop:Generator_UserColumnName="AssemblyPath" type="xs:string" minOccurs="0" />
+              <xs:element name="SourceCode" msprop:Generator_ColumnVarNameInTable="columnSourceCode" msprop:Generator_ColumnPropNameInRow="SourceCode" msprop:Generator_ColumnPropNameInTable="SourceCodeColumn" msprop:Generator_UserColumnName="SourceCode" type="xs:string" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="ReferenceTable" msprop:Generator_UserTableName="ReferenceTable" msprop:Generator_RowEvArgName="ReferenceTableRowChangeEvent" msprop:Generator_TableVarName="tableReferenceTable" msprop:Generator_TablePropName="ReferenceTable" msprop:Generator_RowDeletingName="ReferenceTableRowDeleting" msprop:Generator_RowChangingName="ReferenceTableRowChanging" msprop:Generator_RowDeletedName="ReferenceTableRowDeleted" msprop:Generator_RowEvHandlerName="ReferenceTableRowChangeEventHandler" msprop:Generator_TableClassName="ReferenceTableDataTable" msprop:Generator_RowChangedName="ReferenceTableRowChanged" msprop:Generator_RowClassName="ReferenceTableRow">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="PluginID" msprop:Generator_ColumnVarNameInTable="columnPluginID" msprop:Generator_ColumnPropNameInRow="PluginID" msprop:Generator_ColumnPropNameInTable="PluginIDColumn" msprop:Generator_UserColumnName="PluginID" type="xs:int" />
+              <xs:element name="Assembly" msprop:Generator_ColumnVarNameInTable="columnAssembly" msprop:Generator_ColumnPropNameInRow="Assembly" msprop:Generator_ColumnPropNameInTable="AssemblyColumn" msprop:Generator_UserColumnName="Assembly" type="xs:string" />
+              <xs:element name="Namespace" msprop:Generator_ColumnVarNameInTable="columnNamespace" msprop:Generator_ColumnPropNameInRow="Namespace" msprop:Generator_ColumnPropNameInTable="NamespaceColumn" msprop:Generator_UserColumnName="Namespace" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+    <xs:unique name="Constraint3">
+      <xs:selector xpath=".//mstns:PluginTable" />
+      <xs:field xpath="mstns:PluginID" />
+    </xs:unique>
+    <xs:keyref name="FK_PluginTable_ReferenceTable" refer="Constraint3" msdata:ConstraintOnly="true">
+      <xs:selector xpath=".//mstns:ReferenceTable" />
+      <xs:field xpath="mstns:PluginID" />
+    </xs:keyref>
+  </xs:element>
+</xs:schema>

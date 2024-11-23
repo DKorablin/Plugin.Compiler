@@ -1,2 +1,2 @@
-# TEMPLATE plugin
-This is a template plugin description
+# .NET Framework runtime compiler plugin
+Sometimes it happens that due to changes it is necessary to correct a small piece of code. But for this you have to recompile many assemblies, and the client has to wait for the next release. In order to avoid updating the entire solution for the sake of a couple of lines of code, a separate module was written that allows you to compile and save the source code at runtime.
