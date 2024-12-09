@@ -18,7 +18,7 @@ using System.Runtime.InteropServices;
 #endif
 [assembly: AssemblyCompany("Danila Korablin")]
 [assembly: AssemblyProduct("Plugin.Compiler")]
-[assembly: AssemblyCopyright("Copyright © Danila Korablin 2010-2021")]
+[assembly: AssemblyCopyright("Copyright © Danila Korablin 2010-2024")]
 #endif
 
 /*if $(ConfigurationName) == Release (
