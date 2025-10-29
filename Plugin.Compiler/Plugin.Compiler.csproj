@@ -38,7 +38,7 @@
 		<PublishSingleFile>true</PublishSingleFile>
 		<TreatWarningsAsErrors>false</TreatWarningsAsErrors>
 	</PropertyGroup>
-	<PropertyGroup Condition="'$(Version)' == '1.0.0.0'">
+	<PropertyGroup Condition="'$(GenerateDocumentationFile)' == 'False'">
 		<!--This Hack is added to change output folder for local builds because Directory.Build.props file is maintained centrally using shared project-->
 		<OutputPath>$(SolutionDir)..\..\bin\$(SolutionName)</OutputPath>
 	</PropertyGroup>
