@@ -12,7 +12,7 @@
 		<CopyLocalLockFileAssemblies>True</CopyLocalLockFileAssemblies>
 		<NoWarn>CA1416</NoWarn>
 		<DefineConstants>WIN</DefineConstants>
-		<ArtifactsDir>$(SolutionDir)..\..\bin\$(SolutionName)</ArtifactsDir>
+		<OutputPath>$(SolutionDir)..\..\bin\$(SolutionName)</OutputPath>
 	</PropertyGroup>
 
 	<!--nuspec-->
