@@ -7,6 +7,8 @@
 			<ExcludeAssets>runtime</ExcludeAssets>
 		</PackageVersion>
 		<PackageVersion Include="FCTB" Version="2.16.24" />
+		<PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.9.2" />
+		<PackageVersion Include="Microsoft.Windows.Compatibility" Version="8.0.0" />
 		<!--Analyzers-->
 		<GlobalPackageReference Include="SonarAnalyzer.CSharp" Version="10.8.0.113526">
 			<PrivateAssets>All</PrivateAssets>

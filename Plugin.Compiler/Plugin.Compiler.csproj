@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFrameworks>net48</TargetFrameworks>
+		<TargetFrameworks>net48;net8.0-windows</TargetFrameworks>
 		<UseWindowsForms>true</UseWindowsForms>
+		<EnableWindowsTargeting>true</EnableWindowsTargeting>
 		<OutputType>Library</OutputType>
 		<RootNamespace>Plugin.Compiler</RootNamespace>
 		<Deterministic>false</Deterministic>
@@ -11,13 +12,14 @@
 		<CopyLocalLockFileAssemblies>True</CopyLocalLockFileAssemblies>
 		<NoWarn>CA1416</NoWarn>
 		<DefineConstants>WIN</DefineConstants>
+		<ArtifactsDir>$(SolutionDir)..\..\bin\$(SolutionName)</ArtifactsDir>
 	</PropertyGroup>
 
 	<!--nuspec-->
 	<PropertyGroup>
 		<PackageId>AlphaOmega.SAL.Plugin.Compiler</PackageId>
 		<Version>$(Version)</Version>
-		<Title>.NET Framework runtime compiler plugin</Title>
+		<Title>.NET runtime compiler plugin</Title>
 		<Description>C# compiler plugin to inject code in the runtime inside different plugins</Description>
 		<Authors>Danila Korablin</Authors>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -46,20 +48,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Include="..\Bll.Shared\BllBase.cs" Link="Bll\BllBase.cs" />
-	  <Compile Include="..\Reflection.Shared\FusionWrapper.cs" Link="Bll\FusionWrapper.cs" />
-	  <Compile Include="..\WinForms.Shared\AssemblyTreeView\AssemblyTreeView.cs" Link="UI\AssemblyTreeView.cs" />
-	  <Compile Include="..\WinForms.Shared\Design\ListBoxEditorBase.cs" Link="UI\ListBoxEditorBase.cs" />
-	  <Compile Include="..\WinForms.Shared\SearchGrid\SearchGrid.cs" Link="UI\SearchGrid.cs" />
-	  <Compile Include="..\WinForms.Shared\SearchGrid\SearchGrid.Designer.cs" Link="UI\SearchGrid.Designer.cs" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <EmbeddedResource Include="..\WinForms.Shared\AssemblyTreeView\AssemblyTreeView.resx" Link="UI\AssemblyTreeView.resx" />
-	  <EmbeddedResource Include="..\WinForms.Shared\SearchGrid\SearchGrid.resx" Link="UI\SearchGrid.resx" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="SAL.Windows">
 			<ExcludeAssets>runtime</ExcludeAssets>
 		</PackageReference>
@@ -68,5 +56,33 @@
 	<ItemGroup Condition="'$(TargetFramework)'=='net48'">
 		<Reference Include="System.Design"/>
 		<Reference Include="System.Data.DataSetExtensions"/>
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)'=='net8.0-windows'">
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
+		<PackageReference Include="Microsoft.Windows.Compatibility" />
+	</ItemGroup>
+
+	<!-- Exclude assemblies from copy local based on ExcludeAssembliesFromOutput patterns -->
+	<Target Name="ExcludeSystemAssemblies" AfterTargets="ResolveReferences">
+		<ItemGroup>
+			<ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)" Condition="$([System.String]::Copy('%(Filename)').StartsWith('System.'))" />
+			<ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)" Condition="$([System.String]::Copy('%(Filename)').StartsWith('Microsoft.Win32.'))" />
+		</ItemGroup>
+	</Target>
+
+	<ItemGroup>
+		<Compile Include="..\Bll.Shared\BllBase.cs" Link="Bll\BllBase.cs" />
+		<Compile Include="..\Reflection.Shared\FusionWrapper.cs" Link="Bll\FusionWrapper.cs" />
+		<Compile Include="..\WinForms.Shared\AssemblyTreeView\AssemblyTreeView.cs" Link="UI\AssemblyTreeView.cs" />
+		<Compile Include="..\WinForms.Shared\Design\ListBoxEditorBase.cs" Link="UI\ListBoxEditorBase.cs" />
+		<Compile Include="..\WinForms.Shared\SearchGrid\SearchGrid.cs" Link="UI\SearchGrid.cs" />
+		<Compile Include="..\WinForms.Shared\SearchGrid\SearchGrid.Designer.cs" Link="UI\SearchGrid.Designer.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="..\WinForms.Shared\AssemblyTreeView\AssemblyTreeView.resx" Link="UI\AssemblyTreeView.resx" >
+			<LogicalName>AlphaOmega.Windows.Forms.AssemblyTreeView.resources</LogicalName>
+		</EmbeddedResource>
+		<EmbeddedResource Include="..\WinForms.Shared\SearchGrid\SearchGrid.resx" Link="UI\SearchGrid.resx" />
 	</ItemGroup>
 </Project>

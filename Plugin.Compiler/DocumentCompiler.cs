@@ -13,6 +13,7 @@ using Plugin.Compiler.UI;
 using Plugin.Compiler.Xml;
 using SAL.Flatbed;
 using SAL.Windows;
+using System.Linq; // For roslyn diagnostics
 
 namespace Plugin.Compiler
 {
@@ -317,6 +318,7 @@ namespace Plugin.Compiler
 			} catch(CompilerException exc)
 			{
 				splitMain.Panel2Collapsed = false;
+#if NETFRAMEWORK
 				ListViewItem[] items = new ListViewItem[exc.Result.Errors.Count];
 				for(Int32 loop = 0, count = items.Length;loop < count;loop++)
 				{
@@ -329,6 +331,23 @@ namespace Plugin.Compiler
 					item.SubItems.Add(error.ErrorText);
 					items[loop] = item;
 				}
+#else
+				var diags = exc.Diagnostics.Where(d => d.Severity == Microsoft.CodeAnalysis.DiagnosticSeverity.Error || d.Severity == Microsoft.CodeAnalysis.DiagnosticSeverity.Warning).ToArray();
+				ListViewItem[] items = new ListViewItem[diags.Length];
+				for(Int32 loop = 0, count = items.Length;loop < count;loop++)
+				{
+					var d = diags[loop];
+					var span = d.Location.GetLineSpan();
+					Int32 line = span.IsValid ? span.StartLinePosition.Line + 1 : 0;
+					ListViewItem item = new ListViewItem(d.Id)
+					{
+						ImageIndex = d.Severity == Microsoft.CodeAnalysis.DiagnosticSeverity.Warning ? 0 : 1,
+					};
+					item.SubItems.Add(line.ToString("n0"));
+					item.SubItems.Add(d.GetMessage());
+					items[loop] = item;
+				}
+#endif
 				lvErrors.Items.AddRange(items);
 				lvErrors.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
 			}

@@ -1,13 +1,13 @@
-# .NET Framework Runtime Compiler Plugin
+# .NET Runtime Compiler Plugin
 [![Auto build](https://github.com/DKorablin/Plugin.Compiler/actions/workflows/release.yml/badge.svg)](https://github.com/DKorablin/Plugin.Compiler/releases/latest)
 
-Runtime compilation helper for patching small fragments of code in production without rebuilding the whole solution. Target framework: .NET Framework 4.8.
+Runtime compilation helper for patching small fragments of code in production without rebuilding the whole solution. Target frameworks: .NET Framework 4.8 and .NET 8 (Windows).
 
 ## Problem
 Minor hotfixes often require recompiling and redeploying many assemblies. This plugin lets you inject updated source at runtime, compile it, and persist the result, reducing turnaround time for small fixes.
 
 ## Features
-- Compile C# source snippets at runtime into separate assemblies
+- Compile C# source snippets at runtime into separate assemblies (.NET Framework uses CodeDom; .NET 8 uses Roslyn)
 - Add / manage assembly references through a UI dialog
 - Maintain per‑snippet settings (language, references, metadata)
 - Support partial (incremental) compilation workflows
@@ -41,7 +41,7 @@ To install the Runtime Compiler Plugin, follow these steps:
 - Validate references to avoid mismatched binding redirects.
 
 ## Limitations
-- Designed for .NET Framework 4.8 only.
+- Multi-target: net48 (CodeDom, multiple languages) and net8.0-windows (Roslyn, C# only).
 - Not a full build system; focuses on isolated patches/snippets.
 - Large refactors or cross‑assembly interface changes still require a normal build.
 
