@@ -9,7 +9,7 @@ namespace Plugin.Compiler.Bll
 	{
 		private PluginWindows Plugin { get; }
 
-		/// <summary>Передаётся полный исходный код</summary>
+		/// <summary>The full source code is specified</summary>
 		public Boolean IsFullSourceCode { get; set; }
 
 		public PartialCompiler(PluginWindows plugin)
@@ -20,41 +20,41 @@ namespace Plugin.Compiler.Bll
 			: base(pluginDescription)
 			=> this.Plugin = plugin;
 
-		/// <summary>Получить исходный код для компиляции</summary>
-		/// <returns>Исходный код для компиляции</returns>
+		/// <summary>Get source code for compilation</summary>
+		/// <returns>Source code for compilation</returns>
 		protected override String GetSourceCode()
 			=> this.GetFullSourceCode();
 
-		/// <summary>Получить полный исходный код, который будет скомпилирован и выполнен</summary>
-		/// <param name="languageId">Идентификатор компилятора, который используется для компиляции кода</param>
-		/// <param name="sourceCode">Пользовательский исходный код, который будет помещён в оболочку</param>
-		/// <returns>Полный исходный код для компиляции</returns>
+		/// <summary>Get the full source code that will be compiled and executed</summary>
+		/// <param name="languageId">The compiler identifier used to compile the code</param>
+		/// <param name="sourceCode">The custom source code that will be wrapped</param>
+		/// <returns>The full source code to compile</returns>
 		public String GetFullSourceCode(Int32 languageId, String sourceCode)
 		{
 			CompilerInfo info = this.GetSupportedCompiler(languageId)
-				?? throw new ArgumentNullException(nameof(info), $"Supported compiler not found by languageId: {languageId}");
+				?? throw new ArgumentException(nameof(languageId), $"Supported compiler not found by languageId: {languageId}");
 
 			return this.GetFullSourceCode(info, sourceCode);
 		}
 
-		/// <summary>Получить полный исходный код</summary>
-		/// <returns>Полный исходный код для компиляции</returns>
+		/// <summary>Get the full source code</summary>
+		/// <returns>Full source code for compilation</returns>
 		public String GetFullSourceCode()
 			=> this.IsFullSourceCode
 				? this.SourceCode
 				: this.GetFullSourceCode(this.GetSupportedCompiler(this.LanguageId), this.SourceCode);
 
-		/// <summary>Получить полный исходный код, который будет скомпилирован и выполнен</summary>
-		/// <param name="info">Информация о компиляторе, который используется для компиляции кода</param>
-		/// <param name="sourceCode">Пользовательский исходный код, который будет помещён в оболочку</param>
-		/// <returns>Полный исходный код для компиляции</returns>
+		/// <summary>Get the full source code that will be compiled and executed</summary>
+		/// <param name="info">Information about the compiler used to compile the code</param>
+		/// <param name="sourceCode">Custom source code that will be wrapped</param>
+		/// <returns>The full source code to compile</returns>
 		public String GetFullSourceCode(CompilerInfo info, String sourceCode)
 			=> this.GetFullSourceCode(this.GetSupportedLanguage(info), sourceCode);
 
-		/// <summary>Получить полный исходный код, который будет скомпилирован и выполнен</summary>
-		/// <param name="language">Язык на котором написан исходный код</param>
-		/// <param name="sourceCode">Пользовательский исходный код, который будет помещён в оболочку</param>
-		/// <returns>Полный исходный код для компиляции</returns>
+		/// <summary>Get the full source code that will be compiled and executed</summary>
+		/// <param name="language">The language the source code is written in</param>
+		/// <param name="sourceCode">Custom source code that will be wrapped</param>
+		/// <returns>The full source code for compilation</returns>
 		public String GetFullSourceCode(String language, String sourceCode)
 		{
 			if(String.IsNullOrEmpty(language))
@@ -74,8 +74,8 @@ namespace Plugin.Compiler.Bll
 				this.ArgumentsType);
 		}
 
-		/// <summary>Получить код для сохранения в bat файл</summary>
-		/// <returns>Отформатированный код для выполнения batch'ем</returns>
+		/// <summary>Get code for saving to a batch file</summary>
+		/// <returns>Formatted code for execution by batch</returns>
 		public override String GetBatchCode()
 		{
 			String sourceCodeWithHeader = base.GetBatchCode();
@@ -96,9 +96,9 @@ namespace Plugin.Compiler.Bll
 			return sourceCodeWithHeader + runner;
 		}
 
-		/// <summary>Полчить исходный код без лишнего форматирования</summary>
-		/// <param name="fullSourceCode">Полный исходный код, который будет помещён в оболочку</param>
-		/// <returns>Отчищенный исходный код</returns>
+		/// <summary>Get the source code without unnecessary formatting</summary>
+		/// <param name="fullSourceCode">The full source code that will be placed in the shell</param>
+		/// <returns>The cleaned source code</returns>
 		public String TryToClearFullSource(String fullSourceCode)
 		{
 			const String MethodBegin = "Method Begin";

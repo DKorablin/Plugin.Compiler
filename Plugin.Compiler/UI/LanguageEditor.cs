@@ -6,11 +6,11 @@ using Plugin.Compiler.Bll;
 
 namespace Plugin.Compiler.UI
 {
-	/// <summary>Редактор выбора языка компиляции</summary>
+	/// <summary>Compilation language selection editor</summary>
 	internal class LanguageEditor : ListBoxEditorBase
 	{
-		/// <summary>Получить массив элементов с доступными языками компиляции</summary>
-		/// <returns>Доступные языки компиляции</returns>
+		/// <summary>Get an array of elements with available compilation languages</summary>
+		/// <returns>Available compilation languages</returns>
 		protected override IEnumerable<ListBoxItem> GetValues()
 		{
 			DynamicCompiler compiler = new DynamicCompiler();

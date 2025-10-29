@@ -6,20 +6,20 @@ namespace Plugin.Compiler
 	{
 		private Type _returnType;
 
-		/// <summary>Плагин, вызывающий событие</summary>
+		/// <summary>Plugin that triggers the event</summary>
 		public String CallerPluginId { get; set; }
 
-		/// <summary>Наименование класса для иходного кода</summary>
+		/// <summary>Class name for source code</summary>
 		public String ClassName { get; set; }
 
-		/// <summary>Массив аргументов метода</summary>
-		/// <remarks>По умолчанию, массив аргументов используется как params <see cref="System.Object"/>[]</remarks>
+		/// <summary>Array of method arguments</summary>
+		/// <remarks>By default, the array of arguments is used as params <see cref="System.Object"/>[]</remarks>
 		public Type[] ArgumentsType { get; set; }
 
-		/// <summary>Тип результата возврата метода</summary>
+		/// <summary>Method return type</summary>
 		/// <remarks>
-		/// По умолчанию тип возврата равен <see cref="System.Void"/>.
-		/// При использовании типа <see cref="System.Void"/> возврат будет пустым
+		/// By default, the return type is <see cref="System.Void"/>.
+		/// Using the <see cref="System.Void"/> type will return empty.
 		/// </remarks>
 		public Type ReturnType
 		{

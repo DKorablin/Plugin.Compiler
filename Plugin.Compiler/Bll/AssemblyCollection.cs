@@ -6,35 +6,35 @@ using System.Reflection;
 
 namespace Plugin.Compiler.Bll
 {
-	/// <summary>Класс массива сборок, которые будут добавлены в компилируемый код</summary>
+	/// <summary>Class array of assemblies that will be added to the compiled code</summary>
 	internal class AssemblyCollection : IEnumerable<String>
 	{
-		/// <summary>Список ссылок</summary>
+		/// <summary>List of reference</summary>
 		private Dictionary<String, String[]> References { get; set; }
 
-		/// <summary>Получение пространств имён в определнной сборки</summary>
-		/// <param name="assembly">Сборка в которой получить список всех пространств имён</param>
-		/// <returns>Массив пространств имён</returns>
+		/// <summary>Getting namespaces in a specific assembly</summary>
+		/// <param name="assembly">The assembly in which to get a list of all namespaces</param>
+		/// <returns>An array of namespaces</returns>
 		public String[] this[String assembly]
 		{
 			get => this.References[assembly];
 			private set => this.References[assembly] = value;
 		}
 
-		/// <summary>Получить наименование сборки по индексу</summary>
-		/// <param name="index">Индекс сборки</param>
-		/// <returns>Наименование сборки привязанной к проекту</returns>
+		/// <summary>Get assembly name by index</summary>
+		/// <param name="index">Assembly index</param>
+		/// <returns>Name of the assembly associated with the project</returns>
 		public String this[Int32 index] => this.References.Keys.ToArray()[index];
 
-		/// <summary>Получить количство сборок в массиве</summary>
+		/// <summary>Get the number of assemblies in the array</summary>
 		public Int32 Count => this.References.Count;
 
-		/// <summary>Создание массива сборок</summary>
+		/// <summary>Creating an array of assemblies</summary>
 		internal AssemblyCollection()
 			=> this.References = new Dictionary<String, String[]>();
 
-		/// <summary>Установить массив сборок, которые будут добавлены в исходный код</summary>
-		/// <param name="assemblies">Список сборок для добавления в компиляцию</param>
+		/// <summary>Set an array of assemblies to be added to the source code</summary>
+		/// <param name="assemblies">List of assemblies to add to the compilation</param>
 		public void AddAssemblies(IEnumerable<String> assemblies)
 		{
 			_ = assemblies ?? throw new ArgumentNullException(nameof(assemblies));
@@ -43,8 +43,8 @@ namespace Plugin.Compiler.Bll
 				this.AddAssembly(asm);
 		}
 
-		/// <summary>Добавить сборку в компиляцию</summary>
-		/// <param name="assembly">Сборка, которая будет добавлена в компиляцию</param>
+		/// <summary>Add assembly to compilation</summary>
+		/// <param name="assembly">The assembly to be added to the compilation</param>
 		public void AddAssembly(String assembly)
 		{
 			if(String.IsNullOrEmpty(assembly))
@@ -54,9 +54,9 @@ namespace Plugin.Compiler.Bll
 				this.References.Add(assembly, new String[] { });
 		}
 
-		/// <summary>Проверка нахождения сборки в компиляции</summary>
-		/// <param name="assembly">Cборка, которую необходимо добавить в список сборок</param>
-		/// <returns>Сборка уже добавлена в список</returns>
+		/// <summary>Checking if an assembly is in the compilation</summary>
+		/// <param name="assembly">The assembly to add to the list of assemblies</param>
+		/// <returns>The assembly has already been added to the list</returns>
 		public Boolean IsAssemblyAdded(String assembly)
 		{
 			if(String.IsNullOrEmpty(assembly))
@@ -68,10 +68,10 @@ namespace Plugin.Compiler.Bll
 			return false;
 		}
 
-		/// <summary>Проверка нахождения пространства имён в компиляции</summary>
-		/// <param name="assembly">Сбока в которой осуществляется поиск</param>
-		/// <param name="referencedNamespace">Наименование пространства имён</param>
-		/// <returns>Пространство имён уже добавлено в список</returns>
+		/// <summary>Checking if a namespace is present in the compilation</summary>
+		/// <param name="assembly">Assembly to search</param>
+		/// <param name="referencedNamespace">Namespace name</param>
+		/// <returns>Namespace already added to the list</returns>
 		public Boolean IsNamespaceAdded(String assembly, String referencedNamespace)
 		{
 			if(String.IsNullOrEmpty(assembly))
@@ -85,18 +85,18 @@ namespace Plugin.Compiler.Bll
 			return false;
 		}
 
-		/// <summary>Добавить сборку и пространство имён в компиляцию</summary>
-		/// <param name="assembly">Сборка с добавляемым списком пространств имён</param>
-		/// <param name="referencedNamespaces">Пространства имён, которые будут добавлены в компиляцию</param>
+		/// <summary>Add assembly and namespace to compilation</summary>
+		/// <param name="assembly">Assembly with the list of namespaces to add</param>
+		/// <param name="referencedNamespaces">Namespaces to be added to the compilation</param>
 		public void AddNamespace(Assembly assembly, params String[] referencedNamespaces)
 		{
 			String assemblyName = assembly.GlobalAssemblyCache ? assembly.FullName : assembly.Location;
 			this.AddNamespace(assemblyName, referencedNamespaces);
 		}
 
-		/// <summary>Добавить пространство имён в компиляцию</summary>
-		/// <param name="assembly">Наименование или путь к сборке</param>
-		/// <param name="referencedNamespaces">Пространства имён, которые будут добавлены в компиляцию</param>
+		/// <summary>Add namespace to compilation</summary>
+		/// <param name="assembly">Name or path to the assembly</param>
+		/// <param name="referencedNamespaces">Namespaces to be added to the compilation</param>
 		public void AddNamespace(String assembly, params String[] referencedNamespaces)
 		{
 			if(String.IsNullOrEmpty(assembly))
@@ -114,12 +114,12 @@ namespace Plugin.Compiler.Bll
 				}
 		}
 
-		/// <summary>Удалить все сборки</summary>
+		/// <summary>Delete all assemblies</summary>
 		public void Clear()
 			=> this.References.Clear();
 
-		/// <summary>Удалить сборку</summary>
-		/// <param name="assembly">Наименование сборки для удаления</param>
+		/// <summary>Delete assembly</summary>
+		/// <param name="assembly">Name of the assembly to delete</param>
 		public void RemoveAssembly(String assembly)
 		{
 			if(String.IsNullOrEmpty(assembly))
@@ -128,9 +128,9 @@ namespace Plugin.Compiler.Bll
 			this.References.Remove(assembly);
 		}
 
-		/// <summary>Удалить пространствои имён из сборки</summary>
-		/// <param name="assembly">Наименование сборки в котором находится удаляемое пространство имён</param>
-		/// <param name="referencedNamespace">Наименование пространства имён для удаления</param>
+		/// <summary>Remove namespaces from an assembly</summary>
+		/// <param name="assembly">Name of the assembly containing the namespace to be removed</param>
+		/// <param name="referencedNamespace">Name of the namespace to remove</param>
 		public void RemoveNamespace(String assembly, String referencedNamespace)
 		{
 			if(String.IsNullOrEmpty(assembly))

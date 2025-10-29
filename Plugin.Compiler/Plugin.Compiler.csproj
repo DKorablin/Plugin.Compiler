@@ -1,0 +1,72 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFrameworks>net48</TargetFrameworks>
+		<UseWindowsForms>true</UseWindowsForms>
+		<OutputType>Library</OutputType>
+		<RootNamespace>Plugin.Compiler</RootNamespace>
+		<Deterministic>false</Deterministic>
+		<GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+		<GenerateDocumentationFile>False</GenerateDocumentationFile>
+		<CopyLocalLockFileAssemblies>True</CopyLocalLockFileAssemblies>
+		<NoWarn>CA1416</NoWarn>
+		<DefineConstants>WIN</DefineConstants>
+	</PropertyGroup>
+
+	<!--nuspec-->
+	<PropertyGroup>
+		<PackageId>AlphaOmega.SAL.Plugin.Compiler</PackageId>
+		<Version>$(Version)</Version>
+		<Title>.NET Framework runtime compiler plugin</Title>
+		<Description>C# compiler plugin to inject code in the runtime inside different plugins</Description>
+		<Authors>Danila Korablin</Authors>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageReadmeFile>docs\README.md</PackageReadmeFile>
+		<PackageIcon>docs\SAL.100.png</PackageIcon>
+		<RepositoryUrl>https://github.com/DKorablin/Plugin.Compiler</RepositoryUrl>
+		<PackageTags>SAL;plugin;windows;CSC;Runtime</PackageTags>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\README.md" Pack="true" PackagePath="\docs" />
+		<None Include="..\Images.Shared\SAL.100.png" Pack="true" PackagePath="\docs" />
+	</ItemGroup>
+
+	<PropertyGroup Condition="'$(Configuration)'=='Release'">
+		<Optimize>true</Optimize>
+		<PublishSingleFile>true</PublishSingleFile>
+		<TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<AssemblyAttributes Include="AssemblyMetadata">
+			<_Parameter1>ProjectUrl</_Parameter1>
+			<_Parameter2>https://github.com/DKorablin/Plugin.Compiler</_Parameter2>
+		</AssemblyAttributes>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Include="..\Bll.Shared\BllBase.cs" Link="Bll\BllBase.cs" />
+	  <Compile Include="..\Reflection.Shared\FusionWrapper.cs" Link="Bll\FusionWrapper.cs" />
+	  <Compile Include="..\WinForms.Shared\AssemblyTreeView\AssemblyTreeView.cs" Link="UI\AssemblyTreeView.cs" />
+	  <Compile Include="..\WinForms.Shared\Design\ListBoxEditorBase.cs" Link="UI\ListBoxEditorBase.cs" />
+	  <Compile Include="..\WinForms.Shared\SearchGrid\SearchGrid.cs" Link="UI\SearchGrid.cs" />
+	  <Compile Include="..\WinForms.Shared\SearchGrid\SearchGrid.Designer.cs" Link="UI\SearchGrid.Designer.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="..\WinForms.Shared\AssemblyTreeView\AssemblyTreeView.resx" Link="UI\AssemblyTreeView.resx" />
+	  <EmbeddedResource Include="..\WinForms.Shared\SearchGrid\SearchGrid.resx" Link="UI\SearchGrid.resx" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="SAL.Windows">
+			<ExcludeAssets>runtime</ExcludeAssets>
+		</PackageReference>
+		<PackageReference Include="FCTB" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)'=='net48'">
+		<Reference Include="System.Design"/>
+		<Reference Include="System.Data.DataSetExtensions"/>
+	</ItemGroup>
+</Project>

@@ -17,7 +17,7 @@ namespace Plugin.Compiler
 		private String _vjCode;
 
 		[Category("UI")]
-		[Description("Установка языка компиляции по умолчанию")]
+		[Description("Setting the default compilation language")]
 		[Editor(typeof(LanguageEditor), typeof(UITypeEditor))]
 		public String DefaultCompilerLanguage {
 			get => this._defaultCompilerLanguage;
@@ -26,7 +26,7 @@ namespace Plugin.Compiler
 
 		[DefaultValue(false)]
 		[Category("UI")]
-		[Description("Отображать в загруженных сборках все объекты или только объекты с уровнем доступа public")]
+		[Description("Show all objects in loaded assemblies or only objects with public access level")]
 		public Boolean ShowNonPublicMembers
 		{
 			get => this._showNonPublicMembers;
@@ -37,7 +37,7 @@ namespace Plugin.Compiler
 		[DefaultValue(Constant.Code.VB)]
 		[Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
 		[DisplayName("VB Code")]
-		[Description("Шаблон полного форматирования кода на языке VB Script. Доступные ключи: {Using}, {Namespace}, {ClassName}, {MethodName}, {SourceCode}")]
+		[Description("Template for complete code formatting in VB Script language. Available keys: {Using}, {Namespace}, {ClassName}, {MethodName}, {SourceCode}")]
 		public String VbCode
 		{
 			get => this._vbCode ?? Constant.Code.VB;

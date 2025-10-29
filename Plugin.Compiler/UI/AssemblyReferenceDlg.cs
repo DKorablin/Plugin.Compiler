@@ -27,7 +27,7 @@ namespace Plugin.Compiler.UI
 			base.OnShown(e);
 		}
 
-		/// <summary>Выбранные сборки</summary>
+		/// <summary>The list of selected assemblies</summary>
 		public IEnumerable<String> SelectedAssemblies
 		{
 			get
@@ -38,9 +38,9 @@ namespace Plugin.Compiler.UI
 					if(lvGac.SelectedItems.Count > 0)
 					{
 						Int32 pathIndex = AssemblyReferenceDlg.GetColumnIndex(lvGac, "Path");
-						for(Int32 loop = 0, count = lvGac.SelectedItems.Count;loop < count;loop++)
+						for(Int32 loop = 0, count = lvGac.SelectedItems.Count; loop < count; loop++)
 						{
-							//result[loop] = lvGac.SelectedItems[loop].SubItems[pathIndex].Text;//Путь к сборке на диске
+							//result[loop] = lvGac.SelectedItems[loop].SubItems[pathIndex].Text;//Path to the assembly on disk
 							yield return (String)lvGac.SelectedItems[loop].Tag;//Assembly Name
 						}
 					}
@@ -51,11 +51,11 @@ namespace Plugin.Compiler.UI
 						TreeNode parentNode = tvPlugins.SelectedNode;
 						while(parentNode.Parent != null)
 							parentNode = parentNode.Parent;
-						yield return ((TreeNodeAsm)parentNode).Assembly.Location;//TODO: Не будет работать, если плагин грузится не с файловой системы
+						yield return ((TreeNodeAsm)parentNode).Assembly.Location;//TODO: It won't work if the plugin isn't loaded from the file system.
 					}
 					break;
 				case 2://Browse
-					for(Int32 loop = 0, count = lvBrowse.Items.Count;loop < count;loop++)
+					for(Int32 loop = 0, count = lvBrowse.Items.Count; loop < count; loop++)
 						yield return (String)lvBrowse.Items[loop].Tag;
 					break;
 				default: throw new NotImplementedException(String.Format("Index: {0} Name: {1}", tabMain.SelectedIndex, tabMain.SelectedTab.Text));
@@ -67,23 +67,23 @@ namespace Plugin.Compiler.UI
 		{
 			switch(tabMain.SelectedIndex)
 			{
-				case 0://GAC
-					if(lvGac.Items.Count == 0 && !bgGac.IsBusy)
-					{
-						lvGac.Items.Clear();
-						lvGac.Columns.Clear();
-						bgGac.RunWorkerAsync();
-					}
-					break;
-				case 1://Plugins
-					if(tvPlugins.Nodes.Count == 0)
-						foreach(IPluginDescription plugin in this._plugin.Host.Plugins)
-							tvPlugins.BindAssembly(plugin.Instance.GetType().Assembly);
-					break;
-				case 2://Browse
-					break;
-				default:
-					throw new NotImplementedException(String.Format("Index: {0} Name: {1}", tabMain.SelectedIndex, tabMain.SelectedTab.Text));
+			case 0://GAC
+				if(lvGac.Items.Count == 0 && !bgGac.IsBusy)
+				{
+					lvGac.Items.Clear();
+					lvGac.Columns.Clear();
+					bgGac.RunWorkerAsync();
+				}
+				break;
+			case 1://Plugins
+				if(tvPlugins.Nodes.Count == 0)
+					foreach(IPluginDescription plugin in this._plugin.Host.Plugins)
+						tvPlugins.BindAssembly(plugin.Instance.GetType().Assembly);
+				break;
+			case 2://Browse
+				break;
+			default:
+				throw new NotImplementedException(String.Format("Index: {0} Name: {1}", tabMain.SelectedIndex, tabMain.SelectedTab.Text));
 			}
 		}
 
@@ -98,7 +98,7 @@ namespace Plugin.Compiler.UI
 				using(OpenFileDialog dlg = new OpenFileDialog() { CheckFileExists = true, Multiselect = true, Filter = "Assemblies (*.dll)|*.dll|All files (*.*)|*.*", Title = "Add reference", })
 					if(dlg.ShowDialog() == DialogResult.OK)
 					{
-						ListViewItem[] items = Array.ConvertAll(dlg.FileNames, delegate(String filePath)
+						ListViewItem[] items = Array.ConvertAll(dlg.FileNames, delegate (String filePath)
 						{
 							String path = Path.GetDirectoryName(filePath);
 							ListViewGroup pathGroup = null;
@@ -161,26 +161,26 @@ namespace Plugin.Compiler.UI
 						String[] nameValue = asmProperty.Split(new Char[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
 						switch(nameValue.Length)
 						{
-							case 1://Наименование сборки
-								index = AssemblyReferenceDlg.GetColumnIndex(lvGac, "Name");
-								item.Text = nameValue[0];//Добавлюя колонку наименования сборки
-								break;
-							case 2://Параметры сборки
-								index = AssemblyReferenceDlg.GetColumnIndex(lvGac, nameValue[0].Trim());
+						case 1://The assembly name
+							index = AssemblyReferenceDlg.GetColumnIndex(lvGac, "Name");
+							item.Text = nameValue[0];//Adding a column for the assembly name
+							break;
+						case 2://Build parameters
+							index = AssemblyReferenceDlg.GetColumnIndex(lvGac, nameValue[0].Trim());
 
-								while(lvGac.Columns.Count > item.SubItems.Count)//Добавляю колонки к ряду. Т.к. GetColumnIndex может дополнить ListView
-									item.SubItems.Add(String.Empty);
-								item.SubItems[index].Text = nameValue[1];
-								break;
-							default://ХЗ
-								throw new NotImplementedException($"Can't format assembly '{displayName}' parameter '{asmProperty}'");
+							while(lvGac.Columns.Count > item.SubItems.Count)//I'm adding columns to a row because GetColumnIndex can extend the ListView.
+								item.SubItems.Add(String.Empty);
+							item.SubItems[index].Text = nameValue[1];
+							break;
+						default://ХЗ
+							throw new NotImplementedException($"Can't format assembly '{displayName}' parameter '{asmProperty}'");
 						}
 					}
 
 					String path = AssemblyCache.QueryAssemblyInfo(displayName);
 					index = AssemblyReferenceDlg.GetColumnIndex(lvGac, "Path");
 
-					while(lvGac.Columns.Count > item.SubItems.Count)//Добавляю колонки к ряду. Т.к. GetColumnIndex может дополнить ListView
+					while(lvGac.Columns.Count > item.SubItems.Count)//I'm adding columns to a row because GetColumnIndex can extend the ListView.
 						item.SubItems.Add(String.Empty);
 
 					item.SubItems[index].Text = path;
@@ -198,9 +198,9 @@ namespace Plugin.Compiler.UI
 			lvGac.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
 		}
 
-		/// <summary>Получить индекс добавленной или созданной ранее колонки</summary>
-		/// <param name="columnName">Наименование добавленной или созданной ранее колонки</param>
-		/// <returns>Индекс колонки</returns>
+		/// <summary>Get the index of an added or previously created column</summary>
+		/// <param name="columnName">Name of an added or previously created column</param>
+		/// <returns>Column index</returns>
 		private static Int32 GetColumnIndex(ListView lv, String columnName)
 		{
 			foreach(ColumnHeader columnItem in lv.Columns)

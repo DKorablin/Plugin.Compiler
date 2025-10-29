@@ -11,25 +11,25 @@ namespace Plugin.Compiler
 {
 	public class PluginWindows : IPlugin, IPluginSettings<PluginSettings>
 	{
-		#region Fields
 		private TraceSource _trace;
 		private PluginSettings _settings;
 		private SettingsBll _settingsCompiler;
 		private Dictionary<String, DockState> _documentTypes;
-		#endregion Fields
-		#region Properties
+
 		internal TraceSource Trace => this._trace ?? (this._trace = PluginWindows.CreateTraceSource<PluginWindows>());
 
 		internal IHost Host { get; }
+
 		internal IHostWindows HostWindows => this.Host as IHostWindows;
 
 		private IMenuItem MenuCompilers { get; set; }
+
 		private IMenuItem PluginMenu { get; set; }
 
-		/// <summary>Настройки для взаимодействия из хоста</summary>
+		/// <summary>Settings for interaction from the host</summary>
 		Object IPluginSettings.Settings => this.Settings;
 
-		/// <summary>Настройки для взаимодействия из плагина</summary>
+		/// <summary>Settings for interaction from the plugin</summary>
 		public PluginSettings Settings
 		{
 			get
@@ -70,7 +70,6 @@ namespace Plugin.Compiler
 			}
 		}
 
-		#endregion Properties
 		#region Methods
 		public PluginWindows(IHost host)
 			=> this.Host = host ?? throw new ArgumentNullException(nameof(host));
@@ -78,12 +77,12 @@ namespace Plugin.Compiler
 		public IWindow GetPluginControl(String typeName, Object args)
 			=> this.CreateWindow(typeName, false, args);
 
-		/// <summary>Проверка на существование кода плагнина для вызова</summary>
-		/// <param name="plugin">Описание плагина, который инициировал выполнение кода</param>
-		/// <param name="methodName">Наименование выполняемого метода в динамическом коде</param>
+		/// <summary>Checking for the existence of the plugin code to call</summary>
+		/// <param name="plugin">Description of the plugin that initiated the code execution</param>
+		/// <param name="methodName">Name of the method to execute in dynamic code</param>
 		/// <exception cref="ArgumentNullException"><c>plugin</c> - is null</exception>
 		/// <exception cref="ArgumentNullException"><c>plugin</c> - is null</exception>
-		/// <returns>Данный метод создан и существует в настройках</returns>
+		/// <returns>This method has been created and exists in the settings</returns>
 		public Boolean IsMethodExists(IPluginDescription plugin, String methodName)
 		{
 			_ = plugin ?? throw new ArgumentNullException(nameof(plugin), "Caller plugin interface not specified");
@@ -94,9 +93,9 @@ namespace Plugin.Compiler
 			return this.SettingsCompiler.GetPluginMethodRow(plugin, methodName) != null;
 		}
 
-		/// <summary>Получить список всех методов, которые созданы для этого плагина</summary>
-		/// <param name="plugin">Описание плагина, который инициировал выполнение кода</param>
-		/// <returns>Список методов созданных для плагина</returns>
+		/// <summary>Get a list of all methods created for this plugin</summary>
+		/// <param name="plugin">Description of the plugin that initiated code execution</param>
+		/// <returns>List of methods created for the plugin</returns>
 		public String[] GetMethods(IPluginDescription plugin)
 		{
 			_ = plugin ?? throw new ArgumentNullException(nameof(plugin), "Caller plugin interface not specified");
@@ -104,10 +103,10 @@ namespace Plugin.Compiler
 			return this.SettingsCompiler[plugin].Select(p => p.MethodName).ToArray();
 		}
 
-		/// <summary>Удалить метод плагина</summary>
-		/// <param name="plugin">Описание плагина</param>
-		/// <param name="methodName">Наименование метода</param>
-		/// <returns>Результат удаления метода</returns>
+		/// <summary>Delete plugin method</summary>
+		/// <param name="plugin">Plugin description</param>
+		/// <param name="methodName">Method name</param>
+		/// <returns>Result of method deletion</returns>
 		public Boolean DeleteMethod(IPluginDescription plugin, String methodName)
 		{
 			_ = plugin ?? throw new ArgumentNullException(nameof(plugin), "Caller plugin interface not specified");
@@ -118,11 +117,11 @@ namespace Plugin.Compiler
 			return this.SettingsCompiler.RemovePluginMethodRow(plugin, methodName);
 		}
 
-		/// <summary>Выполнить динамический метод для плагина, используя код сохранённый внупри плагина компилятора</summary>
-		/// <param name="plugin">Описание плагина, который инициировал выполнение кода</param>
-		/// <param name="methodName">Наименование выполняемого класса в динамическом коде</param>
-		/// <param name="compilerArgs">Аргументы передаваемые извне в плагин</param>
-		/// <returns>Результат выполнения динамического кода</returns>
+		/// <summary>Execute a dynamic method for a plugin using code stored within the compiler plugin</summary>
+		/// <param name="plugin">Description of the plugin that initiated code execution</param>
+		/// <param name="methodName">Name of the class being executed in the dynamic code</param>
+		/// <param name="compilerArgs">Arguments passed externally to the plugin</param>
+		/// <returns>Result of executing the dynamic code</returns>
 		public Object InvokeDynamicMethod(IPluginDescription plugin, String methodName, params Object[] compilerArgs)
 		{
 			_ = plugin ?? throw new ArgumentNullException(nameof(plugin), "Caller plugin interface not specified");
@@ -140,12 +139,12 @@ namespace Plugin.Compiler
 				throw new NotImplementedException("Specified method not implemented. Please create it first.");
 
 			/*if(!String.IsNullOrEmpty(row.AssemblyPath))
-				{//Выпрлнить сборку из файла
+				{//Build from file
 					FileInfo fileInfo = new FileInfo(row.AssemblyPath);
 					Assembly assembly;
-					if(row.DateSaved > fileInfo.LastWriteTime)//Сохранённая сборка устарела. Обновить сборку
+					if(row.DateSaved > fileInfo.LastWriteTime)//The saved build is out of date. Update the build.
 						assembly = compiler.CompileAssembly(info, sourceCode);
-					else//Взять сборку с диска
+					else//Take the assembly from the disk
 					{
 						Byte[] rawAssembly = File.ReadAllBytes(row.AssemblyPath);
 						assembly = Assembly.Load(rawAssembly);
@@ -154,9 +153,9 @@ namespace Plugin.Compiler
 						plugin,
 						compilerArgs);
 				} else*/
-			if(compilerArgs != null)//TODO: Скорее всего надо будет сохранять типы
-				compiler.ArgumentsType = Array.ConvertAll(compilerArgs, delegate(Object a) { return a == null ? "Object" : a.GetType().Name; });
-			return compiler.ComplileAndInvoke<Object>(plugin.Instance, compilerArgs);
+			if(compilerArgs != null)//TODO: Most likely it will be necessary to save the types
+				compiler.ArgumentsType = Array.ConvertAll(compilerArgs, a => a == null ? "Object" : a.GetType().Name);
+			return compiler.CompileAndInvoke<Object>(plugin.Instance, compilerArgs);
 		}
 
 		Boolean IPlugin.OnConnection(ConnectMode mode)

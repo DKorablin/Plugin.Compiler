@@ -10,9 +10,9 @@ namespace Plugin.Compiler.Bll
 	{
 		private readonly PluginWindows _plugin;
 
-		/// <summary>Получить ряды методов плагина</summary>
-		/// <param name="pluginType">Тип плагина</param>
-		/// <returns>Ряды описывающие все методы плагина</returns>
+		/// <summary>Get plugin method rows</summary>
+		/// <param name="pluginType">Plugin type</param>
+		/// <returns>Rows describing all plugin methods</returns>
 		public SettingsDataSet.PluginTableRow[] this[IPluginDescription plugin]
 		{
 			get
@@ -41,13 +41,12 @@ namespace Plugin.Compiler.Bll
 				base.DataSet.WriteXml(stream);
 				this._plugin.Host.Plugins.Settings(this._plugin).SaveAssemblyBlob(Constant.SettingsFileName, stream);
 			}
-			//base.Save();
 		}
 
-		/// <summary>Получить строку метода плагина</summary>
-		/// <param name="plugin">Описатель плагина</param>
-		/// <param name="methodName">Наименование метода</param>
-		/// <returns>Ряд описывающий мтод плагина</returns>
+		/// <summary>Get the plugin method string</summary>
+		/// <param name="plugin">Plugin handle</param>
+		/// <param name="methodName">Method name</param>
+		/// <returns>String describing the plugin method</returns>
 		public SettingsDataSet.PluginTableRow GetPluginMethodRow(IPluginDescription plugin, String methodName)
 		{
 			if(String.IsNullOrEmpty(methodName))
@@ -56,10 +55,10 @@ namespace Plugin.Compiler.Bll
 			return this[plugin].FirstOrDefault(p => p.MethodName == methodName);
 		}
 
-		/// <summary>Удалить строку метода привязанную к плагину</summary>
-		/// <param name="plugin">Описатель плагина, где необходимо удалить метод</param>
-		/// <param name="methodName">Наименование метода для удаления</param>
-		/// <returns>Удаление метода прошло успешно</returns>
+		/// <summary>Delete the method string associated with the plugin</summary>
+		/// <param name="plugin">Plugin handle where the method should be deleted</param>
+		/// <param name="methodName">Name of the method to delete</param>
+		/// <returns>Method deletion successful</returns>
 		public Boolean RemovePluginMethodRow(IPluginDescription plugin, String methodName)
 		{
 			SettingsDataSet.PluginTableRow row = this.GetPluginMethodRow(plugin, methodName);
@@ -72,10 +71,10 @@ namespace Plugin.Compiler.Bll
 			return true;
 		}
 
-		/// <summary>Получить компилятор с полной информацией для компиляции</summary>
-		/// <param name="pluginName">Наименование плагина</param>
-		/// <param name="methodName">Наименование метода</param>
-		/// <returns>Компилятор</returns>
+		/// <summary>Get the compiler with full compilation information</summary>
+		/// <param name="pluginName">Plugin name</param>
+		/// <param name="methodName">Method name</param>
+		/// <returns>Compiler</returns>
 		public PartialCompiler AttachPluginMethodRow(IPluginDescription plugin, String methodName)
 		{
 			PartialCompiler compiler = new PartialCompiler(this._plugin, plugin);
@@ -84,11 +83,11 @@ namespace Plugin.Compiler.Bll
 				: null;
 		}
 
-		/// <summary>Заполнить компилятор данными</summary>
-		/// <param name="pluginName">Наименование плагина</param>
-		/// <param name="methodName">Наименование метода</param>
-		/// <param name="compiler">Компилятор, который необходимо заполнить</param>
-		/// <returns>Ряд, описывающий информацию по компилируемому модулю</returns>
+		/// <summary>Fill the compiler with data</summary>
+		/// <param name="pluginName">Plugin name</param>
+		/// <param name="methodName">Method name</param>
+		/// <param name="compiler">Compiler to be filled</param>
+		/// <returns>A row describing information about the compiled module</returns>
 		public Boolean AttachPluginMethodRow(IPluginDescription plugin, String methodName, ref PartialCompiler compiler)
 		{
 			SettingsDataSet.PluginTableRow row = this.GetPluginMethodRow(plugin, methodName);
@@ -107,9 +106,9 @@ namespace Plugin.Compiler.Bll
 			return true;
 		}
 
-		/// <summary>Изменить или добавить информацию о методе</summary>
-		/// <param name="pluginType">Наименование плагина</param>
-		/// <param name="assemblyPath">Путь к скомпилированной сборки</param>
+		/// <summary>Edit or add method information</summary>
+		/// <param name="pluginType">Plugin name</param>
+		/// <param name="assemblyPath">Path to the compiled assembly</param>
 		public void ModifyPluginRow(IPluginDescription plugin, PartialCompiler compiler)
 		{
 			var row = GetPluginMethodRow(plugin, compiler.ClassName);
@@ -139,10 +138,10 @@ namespace Plugin.Compiler.Bll
 			this.Save();
 		}
 
-		/// <summary>Получить класс ссылок и пространств имён по наименованию плагина и наименованию метода</summary>
-		/// <param name="plugin">Описатель плагина</param>
-		/// <param name="methodName">Наименование метода</param>
-		/// <returns>Коллекция сборок и пространств имён</returns>
+		/// <summary>Get a class of references and namespaces by plugin name and method name</summary>
+		/// <param name="plugin">Plugin handle</param>
+		/// <param name="methodName">Method name</param>
+		/// <returns>Collection of assemblies and namespaces</returns>
 		public AssemblyCollection GetPluginReferences(IPluginDescription plugin, String methodName)
 		{
 			var row = this.GetPluginMethodRow(plugin, methodName);
@@ -151,9 +150,9 @@ namespace Plugin.Compiler.Bll
 				: this.GetPluginReferenceCollection(row.PluginID);
 		}
 
-		/// <summary>Получить класс ссылок на сборки и пространств имён по идентификатору плагина и метода</summary>
-		/// <param name="pluginId">Идентификатор метода и плагина</param>
-		/// <returns>Коллекция сборок и пространств имён</returns>
+		/// <summary>Get a class of assembly references and namespaces by plugin and method ID</summary>
+		/// <param name="pluginId">Method and plugin ID</param>
+		/// <returns>Collection of assemblies and namespaces</returns>
 		public AssemblyCollection GetPluginReferenceCollection(Int32 pluginId)
 		{
 			AssemblyCollection result = new AssemblyCollection();
@@ -166,16 +165,16 @@ namespace Plugin.Compiler.Bll
 			return result;
 		}
 
-		/// <summary>Получить ряды ссылок на другие сборки</summary>
-		/// <param name="pluginId">Идентификатор метода плагина</param>
-		/// <returns>Набор сторок с ссылками сборки</returns>
+		/// <summary>Get rows of references to other assemblies</summary>
+		/// <param name="pluginId">Plugin method ID</param>
+		/// <returns>A set of rows with assembly references</returns>
 		protected SettingsDataSet.ReferenceTableRow[] GetPluginReferences(Int32 pluginId)
 			=> base.DataSet.ReferenceTable.Where(p => p.PluginID == pluginId).OrderBy(p => p.Assembly).ToArray();
 
-		/// <summary>Установить ссылки для метода и сборки</summary>
-		/// <param name="pluginType">Тип плагина</param>
-		/// <param name="methodName">Наименование метода</param>
-		/// <param name="collection">Коллекция ссылок для компиляции</param>
+		/// <summary>Set references for the method and assembly</summary>
+		/// <param name="pluginType">Plugin type</param>
+		/// <param name="methodName">Method name</param>
+		/// <param name="collection">Collection of references for compilation</param>
 		public void SetPluginReferences(IPluginDescription plugin, String methodName, AssemblyCollection collection)
 		{
 			SettingsDataSet.PluginTableRow row = this.GetPluginMethodRow(plugin, methodName)
@@ -184,9 +183,9 @@ namespace Plugin.Compiler.Bll
 			this.SetPluginReferences(row.PluginID, collection);
 		}
 
-		/// <summary>Установить ссылки для метода и сборки</summary>
-		/// <param name="pluginId">Идентификатор плагина для которого установить ссылки</param>
-		/// <param name="collection">Коллекция ссылок</param>
+		/// <summary>Set references for the method and assembly</summary>
+		/// <param name="pluginId">Identifier of the plugin to set references for</param>
+		/// <param name="collection">Collection of references</param>
 		private void SetPluginReferences(Int32 pluginId, AssemblyCollection collection)
 		{
 			this.RemovePluginReferences(pluginId);
@@ -198,8 +197,8 @@ namespace Plugin.Compiler.Bll
 			}
 		}
 
-		/// <summary>Удалить все ссылки на сборки для метода определённого плагина</summary>
-		/// <param name="pluginId">Идентификатор плагина у которого удалить все ссылки</param>
+		/// <summary>Remove all assembly references for a method in a specific plugin</summary>
+		/// <param name="pluginId">The ID of the plugin for which to remove all references</param>
 		private void RemovePluginReferences(Int32 pluginId)
 		{
 			foreach(var reference in this.GetPluginReferences(pluginId))

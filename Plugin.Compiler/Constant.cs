@@ -6,12 +6,12 @@ namespace Plugin.Compiler
 	{
 		public static class PluginMessage
 		{
-			/// <summary>Кол-во аргуметов передаваемых из исходного плагина на выполнение, которые используются для инициализации компилятора</summary>
+			/// <summary>Number of arguments passed from the source plugin for execution, which are used to initialize the compiler</summary>
 			public const Int32 DynamicMethodArgsLength = 2;
-			/// <summary>Выполнить динамический метод</summary>
+			/// <summary>Execute a dynamic method</summary>
 			public const String InvokeDynamicMethod = "InvokeDynamicMethod";
 		}
-		/// <summary>Версия компиляции по умолчанию</summary>
+		/// <summary>Default compilation version</summary>
 		public const String DefaultCompilerVersion = "v2.0";
 		public const String SettingsFileName = "Plugin.Compiler.xml";
 		public const String NamespaceTemplateArgs1 = @"using {0};";
@@ -77,7 +77,7 @@ public static class {Namespace}
 
 			public static class Batch
 			{
-				/// <summary>Заголовок bat файла для динамической компиляции</summary>
+				/// <summary>BAT file header for dynamic compilation</summary>
 				public const String CompilerArgs1 = @"
 /*
 @echo off && cls
@@ -92,7 +92,7 @@ PAUSE
 exit
 */
 ";
-				/// <summary>Шаблон запуска обёртки в bat файле</summary>
+				/// <summary>Template for launching a wrapper in a bat file</summary>
 				public const String RunnerArg4 = @"
 class Program
 {
@@ -111,18 +111,18 @@ class Program
 					: String.Join(",", Array.ConvertAll(argumentsType, delegate(String arg) { return arg + " a" + (index++); }));
 
 				return template
-					.Replace("{Using}", namespaces)//Подключаемые пространства имён
-					.Replace("{Namespace}", Constant.Code.NamespaceName)//Пространство имён в котором создаётся сборка
-					.Replace("{ClassName}", className)//Префикс создаваемого класса
-					.Replace("{MethodName}", Constant.Code.MethodName)//Наименование метода, который будет вызван
+					.Replace("{Using}", namespaces)//Pluggable namespaces
+					.Replace("{Namespace}", Constant.Code.NamespaceName)//The namespace in which the assembly is created
+					.Replace("{ClassName}", className)//Prefix of the created class
+					.Replace("{MethodName}", Constant.Code.MethodName)//The name of the method to be called
 					.Replace("{ReturnType}", returnType == null ? "void" : returnType)
 					.Replace("{ArgumentsType}", arguments)
-					.Replace("{SourceCode}", sourceCode);//Пользовательский исходный код
+					.Replace("{SourceCode}", sourceCode);//Custom source code
 			}
 		}
 		#endregion CodeTemplate
 
-		public enum SupportedLanguage : Int32
+		public enum SupportedLanguage
 		{
 			/// <summary>C#</summary>
 			CS,

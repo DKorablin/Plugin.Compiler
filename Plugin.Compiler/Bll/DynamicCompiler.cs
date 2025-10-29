@@ -16,10 +16,10 @@ namespace Plugin.Compiler.Bll
 		private static CompiledAssemblyLinks AssemblyLinks = new CompiledAssemblyLinks();
 		private String _compilerVersion;
 
-		/// <summary>Список ссылок и пространств имён, которые будут добавлены в исходный код</summary>
+		/// <summary>List of references and namespaces that will be added to the source code</summary>
 		public AssemblyCollection References { get; internal set; }
 
-		/// <summary>Наименование плагина, который добавляется в исходный код</summary>
+		/// <summary>Name of the plugin that is added to the source code</summary>
 		public String ClassName
 		{
 			get => this._className;
@@ -28,7 +28,7 @@ namespace Plugin.Compiler.Bll
 				: value.Trim().Replace(' ', '_').Replace('.', '_');
 		}
 
-		/// <summary>Полное наименование вызваемого метода</summary>
+		/// <summary>Full name of the called method</summary>
 		public String FullMethodDescription
 		{
 			get
@@ -42,10 +42,10 @@ namespace Plugin.Compiler.Bll
 			}
 		}
 
-		/// <summary>Входящие аргументы</summary>
+		/// <summary>Input arguments</summary>
 		public String[] ArgumentsType { get; set; }
 
-		/// <summary>Результат выполнения метода</summary>
+		/// <summary>The result of the method execution</summary>
 		public String ReturnType
 		{
 			get => this._returnType;
@@ -54,34 +54,34 @@ namespace Plugin.Compiler.Bll
 					: value;
 		}
 
-		/// <summary>Исходный код для компиляции</summary>
+		/// <summary>Source code for compilation</summary>
 		public String SourceCode { get; set; }
 
-		/// <summary>Путь к файлу куда компилировать сборку</summary>
-		/// <remarks>TODO: Пока параметр не используется</remarks>
+		/// <summary>Path to the file where the assembly is compiled</summary>
+		/// <remarks>TODO: This parameter is not currently used</remarks>
 		public String CompiledAssemblyFilePath { get; set; }
 
-		/// <summary>Версия в которой компилировать сборку</summary>
-		/// <remarks>По умолчанию используется версия v2.0</remarks>
+		/// <summary>Version to compile the assembly with</summary>
+		/// <remarks>By default, v2.0 is used</remarks>
 		public String CompilerVersion
 		{
 			get => this._compilerVersion ?? Constant.DefaultCompilerVersion;
 			set => this._compilerVersion = value;
 		}
 
-		/// <summary>Включить в сборку отладочную информацию</summary>
+		/// <summary>Include debug information in the build</summary>
 		public Boolean IsIncludeDebugInfo { get; set; }
 
-		/// <summary>Идентификатор языка на которм написан код</summary>
+		/// <summary>Identifier of the language in which the code is written</summary>
 		public Int32 LanguageId { get; set; }
 
-		/// <summary>Создание экземпляра класса</summary>
+		/// <summary>Creating a class instance</summary>
 		public DynamicCompiler()
 			: this(null)
 		{ }
 
-		/// <summary>Создание экземпляра класса с указанием стартового префикса класса</summary>
-		/// <param name="pluginName">Наименование плагина для которого компилируется код</param>
+		/// <summary>Creating a class instance with a specified class start prefix</summary>
+		/// <param name="pluginName">Name of the plugin for which the code is compiled</param>
 		public DynamicCompiler(IPluginDescription pluginDescription)
 		{
 			this.ClassName = pluginDescription == null ? "Undefined" : String.Join("_", pluginDescription.ID.Split('-'));
@@ -89,8 +89,8 @@ namespace Plugin.Compiler.Bll
 		}
 
 		#region Methods
-		/// <summary>Получить массив установленных версий фреймворка</summary>
-		/// <returns>Массив номеров установленных версий</returns>
+		/// <summary>Get an array of installed framework versions</summary>
+		/// <returns>Array of installed version numbers</returns>
 		public static IEnumerable<String> GetFrameworkVersions()
 		{
 			RegistryKey componentsKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Net Framework Setup\NDP\");
@@ -102,23 +102,23 @@ namespace Plugin.Compiler.Bll
 						yield return keyName;
 		}
 
-		/// <summary>Получить список поддерживаемых компиляторов</summary>
-		/// <returns>Список поддерживаемых компиляторов</returns>
+		/// <summary>Get a list of supported compilers</summary>
+		/// <returns>List of supported compilers</returns>
 		public CompilerInfo[] GetSupportedCompilers()
 			=> CodeDomProvider.GetAllCompilerInfo();
 
-		/// <summary>Получить поддерживаемый компилятор</summary>
-		/// <param name="index">Индекс компилятора из списка поддерживаемых</param>
-		/// <returns>Информация по найденному компилятору или null</returns>
+		/// <summary>Get a supported compiler</summary>
+		/// <param name="index">Compiler index from the list of supported ones</param>
+		/// <returns>Information about the found compiler or null</returns>
 		public CompilerInfo GetSupportedCompiler(Int32 index)
 		{
 			CompilerInfo[] compilers = this.GetSupportedCompilers();
 			return compilers.Length > index ? compilers[index] : null;
 		}
 
-		/// <summary>Получить поддерживаемый язык из информации о компиляторе</summary>
-		/// <param name="compiler">Информация о компиляторе</param>
-		/// <returns>Наименование языка из информации о компиляторе</returns>
+		/// <summary>Get the supported language from the compiler information</summary>
+		/// <param name="compiler">Compiler information</param>
+		/// <returns>Language name from the compiler information</returns>
 		public String GetSupportedLanguage(CompilerInfo info)
 		{
 			String[] names = info.GetLanguages();
@@ -126,8 +126,8 @@ namespace Plugin.Compiler.Bll
 			return length > 0 ? names[length - 1] : String.Empty;
 		}
 
-		/// <summary>Получить список поддерживаемых языков</summary>
-		/// <returns>Массив поддерживаемых языков компилятором</returns>
+		/// <summary>Get a list of supported languages</summary>
+		/// <returns>Array of languages ​​supported by the compiler</returns>
 		public IEnumerable<String> GetSupportedLanguages()
 		{
 			CompilerInfo[] languages = this.GetSupportedCompilers();
@@ -139,8 +139,8 @@ namespace Plugin.Compiler.Bll
 			}
 		}
 
-		/// <summary>Скомпилировать сборку</summary>
-		/// <returns>Полученная сборка</returns>
+		/// <summary>Compile the assembly</summary>
+		/// <returns>Resulting assembly</returns>
 		public Assembly CompileAssembly()
 		{//TODO: Not thread safe
 			Assembly result;
@@ -157,8 +157,8 @@ namespace Plugin.Compiler.Bll
 			return result;
 		}
 
-		/// <summary>Сохранить исходный код в виде bat файла</summary>
-		/// <param name="filePath">Путь к файлу в который записать код</param>
+		/// <summary>Save the source code as a batch file</summary>
+		/// <param name="filePath">Path to the file where the code will be written</param>
 		public virtual String GetBatchCode()
 		{
 			List<String> references = new List<String>();
@@ -173,30 +173,30 @@ namespace Plugin.Compiler.Bll
 			return batchHeader + sourceCode;
 		}
 
-		/// <summary>Скомпилировать и запустить сборку</summary>
-		/// <typeparam name="T">Результат выполнения</typeparam>
-		/// <param name="plugin">Вызывающий плагин</param>
-		/// <param name="args">Аргументы передаваемые в код</param>
-		/// <returns>Результат выполнения динамически скомпилированного кода</returns>
-		public T ComplileAndInvoke<T>(IPlugin plugin, params Object[] args)
+		/// <summary>Compile and run the build</summary>
+		/// <typeparam name="T">Execution result</typeparam>
+		/// <param name="plugin">Calling plugin</param>
+		/// <param name="args">Arguments passed to the code</param>
+		/// <returns>Result of executing the dynamically compiled code</returns>
+		public T CompileAndInvoke<T>(IPlugin plugin, params Object[] args)
 		{
 			Assembly assembly = this.CompileAssembly();
 			return this.InvokeAssembly<T>(assembly, plugin, args);
 		}
 
-		/// <summary>Получить исходный код для компиляции</summary>
-		/// <returns>Исходный код для компиляции</returns>
+		/// <summary>Get source code for compilation</summary>
+		/// <returns>Source code for compilation</returns>
 		protected virtual String GetSourceCode()
 			=> this.SourceCode;
 
-		/// <summary>Скомпилировать сборку из класса, полностью написанного пользователем</summary>
-		/// <param name="language">Язык на котором написан код</param>
-		/// <param name="fullCode">Полный исходный код для генерации сборки</param>
-		/// <returns>Сгенерированная сборка</returns>
+		/// <summary>Compile an assembly from a class written entirely by the user</summary>
+		/// <param name="language">The language in which the code is written</param>
+		/// <param name="fullCode">The full source code for generating the assembly</param>
+		/// <returns>The generated assembly</returns>
 		private Assembly CompileAssembly(CompilerInfo info, String sourceCode)
 		{
 			if(!String.IsNullOrEmpty(this.CompilerVersion))
-			{//Setting the compiler verion. Because of .NET 5+ I have to change this object type from property to field
+			{//Setting the compiler version. Because of .NET 5+ I have to change this object type from property to field
 				IDictionary<String, String> data = (IDictionary<String, String>)info.GetType().InvokeMember("_providerOptions", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.GetField, null, info, null);
 				if(data.Count > 0 && data.Keys.Contains("CompilerVersion"))
 					data["CompilerVersion"] = this.CompilerVersion;
@@ -239,12 +239,12 @@ namespace Plugin.Compiler.Bll
 			}
 		}
 
-		/// <summary>Выполнить сборку</summary>
-		/// <typeparam name="T">Тип возвращаемого результата метода</typeparam>
-		/// <param name="host">Хост, запускающий динамический код</param>
-		/// <param name="plugin">Плагин, который вызвал код</param>
-		/// <param name="args">Аргументы передаваемые в динамически скомпилированную сборку</param>
-		/// <returns>Результат выполнения динамически скомпилированной сборки</returns>
+		/// <summary>Execute the build</summary>
+		/// <typeparam name="T">The return type of the method</typeparam>
+		/// <param name="host">The host running the dynamic code</param>
+		/// <param name="plugin">The plugin that called the code</param>
+		/// <param name="args">Arguments passed to the dynamically compiled assembly</param>
+		/// <returns>The result of executing the dynamically compiled assembly</returns>
 		public T InvokeAssembly<T>(Assembly assembly,IPlugin plugin, params Object[] args)
 		{
 			String typeName = Constant.Code.NamespaceName + "." + this.ClassName;

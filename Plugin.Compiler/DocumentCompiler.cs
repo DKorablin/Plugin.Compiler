@@ -21,7 +21,6 @@ namespace Plugin.Compiler
 		private IPluginDescription _callerPlugin;
 		private DocumentCompilerSettings _settings;
 		private PartialCompiler _compiler;
-		#region Properties
 
 		Object IPluginSettings.Settings => this.Settings;
 
@@ -48,8 +47,8 @@ namespace Plugin.Compiler
 		private PluginWindows Plugin => (PluginWindows)this.Window.Plugin;
 
 		private IWindow Window => (IWindow)base.Parent;
-		
-		/// <summary>Плагин, вызывающий событие</summary>
+
+		/// <summary>Plugin that triggers the event</summary>
 		private IPluginDescription CallerPlugin
 		{
 			get
@@ -70,22 +69,21 @@ namespace Plugin.Compiler
 				}
 				return this._callerPlugin;
 			}
-			set => this._callerPlugin = value;
 		}
 
-		/// <summary>Локальный запуск компилятора</summary>
+		/// <summary>Local compiler execution</summary>
 		private Boolean IsCallerPluginLocal => this.CallerPlugin.Instance == this.Plugin;
-		
-		/// <summary>Сообщение, которое будет вызвано по завершению компиляции</summary>
+
+		/// <summary>Message that will be called upon completion of compilation</summary>
 		public event EventHandler<DataEventArgs> SaveEvent;
-		
-		/// <summary>Выбранный язык в списке компиляторов</summary>
+
+		/// <summary>Selected language in the list of compilers</summary>
 		private ComboListItem SelectedLanguage => (ComboListItem)tsddlLanguages.SelectedItem;
 
-		/// <summary>Выбранный компилятор в списке компиляторов</summary>
+		/// <summary>The selected compiler in the list of compilers</summary>
 		private CompilerInfo SelectedCompiler => this.SelectedLanguage.Tag;
 
-		/// <summary>Выбранная версия компилятора в списке компиляторов</summary>
+		/// <summary>The selected compiler version in the list of compilers</summary>
 		private String SelectedCompilerVersion
 		{
 			get
@@ -102,11 +100,10 @@ namespace Plugin.Compiler
 				this.Compiler.CompilerVersion = value;
 			}
 		}
-		#endregion Properties
 
 		public DocumentCompiler()
 		{
-			InitializeComponent();
+			this.InitializeComponent();
 
 			splitMain.Panel2Collapsed = true;
 		}
@@ -151,7 +148,7 @@ namespace Plugin.Compiler
 					ProjectXmlLoader loader = new ProjectXmlLoader(this.Plugin);
 					this.Compiler = loader.LoadCompilerString(this.CallerPlugin, className);
 				} catch(XmlException exc)
-				{//TODO: Надо как-то валидировать наименование первого создаваемого метода...
+				{//TODO: We need to somehow validate the name of the first method we create...
 					this.Plugin.Trace.TraceData(TraceEventType.Error, 1, exc);
 				}
 			if(this.Compiler == null)
@@ -168,7 +165,7 @@ namespace Plugin.Compiler
 
 			if(this.Compiler.References.Count == 0)
 			{
-				//Цепляются сборки старых версий
+				//Old version builds are attached
 				this.Compiler.References.AddNamespace("System", "System", "System.IO");
 				this.Compiler.References.AddNamespace("System.Windows.Forms", "System.Windows.Forms");
 				if(this.Settings.ArgumentsType != null)
@@ -232,7 +229,7 @@ namespace Plugin.Compiler
 			} else if(e.ClickedItem == tsmiReferenceRemoveNamespace)
 			{
 				if(this.GetSelectedAssemblyAndNamespace(out String assembly, out String ns)
-					&& MessageBox.Show($"Are you shure you want to remove namespace {ns} in assembly {assembly} from compilation?", this.Window.Caption, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+					&& MessageBox.Show($"Are you sure you want to remove namespace {ns} in assembly {assembly} from compilation?", this.Window.Caption, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
 				{
 					this.Compiler.References.RemoveNamespace(assembly, ns);
 					if(tsbnFullSource.Checked)
@@ -249,8 +246,6 @@ namespace Plugin.Compiler
 
 		private void tsbnCompilerVersion_DropDownItemClicked(Object sender, ToolStripItemClickedEventArgs e)
 		{
-			String prevLanguage = this.SelectedLanguage.Text;
-			String currLanguage = e.ClickedItem.Tag.ToString();
 			foreach(ToolStripMenuItem item in tsbnCompilerVersion.DropDownItems)
 				if(item != e.ClickedItem)
 				{
@@ -288,13 +283,13 @@ namespace Plugin.Compiler
 				this.Compiler.CompiledAssemblyFilePath = String.Empty;
 
 				if(e.ClickedItem == tsmiCompile)
-				{//Скомпилировать и выполнить сборку
-					Object result = this.Compiler.ComplileAndInvoke<Object>(this.CallerPlugin.Instance);
+				{//Compile and build assembly
+					Object result = this.Compiler.CompileAndInvoke<Object>(this.CallerPlugin.Instance);
 
 					if(result != null)
 						this.Plugin.Trace.TraceEvent(TraceEventType.Information, 10, result.ToString());
 				} else if(e.ClickedItem == tsmiBuild)
-				{//Скомпилировать и сохранить сборку на диске
+				{//Compile and save the assembly to disk
 					using(SaveFileDialog dlg = new SaveFileDialog() { OverwritePrompt = true, AddExtension = true, FileName = this.Compiler.CompiledAssemblyFilePath, DefaultExt = "dll", Filter = "DLL file (*.dll)|*.dll|Batch file (*.bat)|*.bat", })
 						if(dlg.ShowDialog() == DialogResult.OK)
 						{
@@ -316,7 +311,7 @@ namespace Plugin.Compiler
 					throw new NotImplementedException(e.ClickedItem.ToString());
 
 				splitMain.Panel2Collapsed = true;
-				if(this.IsCallerPluginLocal)//Сохраняю настройки локального плагина
+				if(this.IsCallerPluginLocal)//Saving local plugin settings
 					this.Plugin.SettingsCompiler.ModifyPluginRow(this.CallerPlugin, this.Compiler);
 
 			} catch(CompilerException exc)
@@ -342,7 +337,7 @@ namespace Plugin.Compiler
 		private void tsmiProject_DropDownItemClicked(Object sender, ToolStripItemClickedEventArgs e)
 		{
 			if(e.ClickedItem == tsmiImport)
-			{//Импортировать информацию о проекте
+			{//Import project information
 				using(OpenFileDialog dlg = new OpenFileDialog() { CheckFileExists = true, DefaultExt = "xml", Filter = "XML file (*.xml)|*.xml|All files (*.*)|*.*", Title = "Open Project File", })
 					if(dlg.ShowDialog() == DialogResult.OK)
 					{
@@ -350,12 +345,12 @@ namespace Plugin.Compiler
 						this.Compiler = loader.LoadCompilerFile(this.CallerPlugin, dlg.FileName);
 					}
 			} else if(e.ClickedItem == tsmiExport)
-			{//Экспортировать информацию о проекте
+			{//Export project information
 				using(SaveFileDialog dlg = new SaveFileDialog() { OverwritePrompt = true, AddExtension = true, FileName = this.Compiler.ClassName + ".xml", DefaultExt = "xml", Filter = "XML file (*.xml)|*.xml|Aff files (*.*)|*.*", })
 					if(dlg.ShowDialog() == DialogResult.OK)
 						File.WriteAllText(dlg.FileName, ProjectXmlLoader.SaveCompiler(this.Compiler));
 			} else if(e.ClickedItem == tsmiSave)
-			{//Сохраненить информацию о проекте
+			{//Save project information
 				if(tsbnCompile.Enabled && lvErrors.Items.Count == 0)
 					this.OnSaveEvent();
 				else
@@ -516,7 +511,7 @@ namespace Plugin.Compiler
 			return assembly != null && ns != null;
 		}
 
-		/// <summary>Обновить все сборки доступные в проекте</summary>
+		/// <summary>Update all assemblies available in the project</summary>
 		private void ReloadReferences()
 		{
 			tvReference.Nodes.Clear();
@@ -527,7 +522,7 @@ namespace Plugin.Compiler
 				{
 					TreeNode node = File.Exists(assembly)
 						? tvReference.BindAssembly(assembly)
-						: tvReference.BindAssembly(AssemblyCache.QueryAssemblyInfo(assembly));//TODO: Тут будет ошибка, если сборка загружена не с файловой системы
+						: tvReference.BindAssembly(AssemblyCache.QueryAssemblyInfo(assembly));//TODO: There will be an error if the assembly is not loaded from the file system.
 					node.Tag = assembly;
 				} catch(Exception exc)
 				{

@@ -19,7 +19,7 @@ namespace Plugin.Compiler.Xml
 				return type.GetElementType().GetRealType();
 			return type;
 		}
-		/// <summary>Базовый тип по которому возможны основные манипуляции</summary>
+		/// <summary>Base type for which basic manipulations are possible</summary>
 		/// <param name="type"></param>
 		/// <returns></returns>
 		public static Boolean IsConvertible(this Type type)
