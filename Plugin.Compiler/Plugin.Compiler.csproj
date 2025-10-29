@@ -12,7 +12,6 @@
 		<CopyLocalLockFileAssemblies>True</CopyLocalLockFileAssemblies>
 		<NoWarn>CA1416</NoWarn>
 		<DefineConstants>WIN</DefineConstants>
-		<OutputPath>$(SolutionDir)..\..\bin\$(SolutionName)</OutputPath>
 	</PropertyGroup>
 
 	<!--nuspec-->
@@ -39,6 +38,10 @@
 		<PublishSingleFile>true</PublishSingleFile>
 		<TreatWarningsAsErrors>false</TreatWarningsAsErrors>
 	</PropertyGroup>
+	<PropertyGroup Condition="'$(Version)' == '1.0.0.0'">
+		<!--This Hack is added to change output folder for local builds because Directory.Build.props file is maintained centrally using shared project-->
+		<OutputPath>$(SolutionDir)..\..\bin\$(SolutionName)</OutputPath>
+	</PropertyGroup>
 
 	<ItemGroup>
 		<AssemblyAttributes Include="AssemblyMetadata">
@@ -62,8 +65,8 @@
 		<PackageReference Include="Microsoft.Windows.Compatibility" />
 	</ItemGroup>
 
-	<!-- Exclude assemblies from copy local based on ExcludeAssembliesFromOutput patterns -->
 	<Target Name="ExcludeSystemAssemblies" AfterTargets="ResolveReferences">
+		<!-- Exclude shared assemblies from copy to the output directory -->
 		<ItemGroup>
 			<ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)" Condition="$([System.String]::Copy('%(Filename)').StartsWith('System.'))" />
 			<ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)" Condition="$([System.String]::Copy('%(Filename)').StartsWith('Microsoft.Win32.'))" />
