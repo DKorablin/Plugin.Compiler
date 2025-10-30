@@ -106,6 +106,11 @@ namespace Plugin.Compiler
 		{
 			this.InitializeComponent();
 
+#if NETFRAMEWORK
+			this.txtSource.Language = FastColoredTextBoxNS.Language.CSharp;
+#else
+			this.txtSource.Language = FastColoredTextBoxNS.Text.Language.CSharp;
+#endif
 			splitMain.Panel2Collapsed = true;
 		}
 

@@ -54,7 +54,8 @@
 		<PackageReference Include="SAL.Windows">
 			<ExcludeAssets>runtime</ExcludeAssets>
 		</PackageReference>
-		<PackageReference Include="FCTB" />
+		<PackageReference Include="FCTB" Condition="'$(TargetFramework)'=='net48'" />
+		<PackageReference Include="Vax-FCTB" Condition="'$(TargetFramework)'=='net8.0-windows'"/>
 	</ItemGroup>
 	<ItemGroup Condition="'$(TargetFramework)'=='net48'">
 		<Reference Include="System.Design"/>
