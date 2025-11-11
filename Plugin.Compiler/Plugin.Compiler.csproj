@@ -87,6 +87,8 @@
 		<EmbeddedResource Include="..\WinForms.Shared\AssemblyTreeView\AssemblyTreeView.resx" Link="UI\AssemblyTreeView.resx" >
 			<LogicalName>AlphaOmega.Windows.Forms.AssemblyTreeView.resources</LogicalName>
 		</EmbeddedResource>
-		<EmbeddedResource Include="..\WinForms.Shared\SearchGrid\SearchGrid.resx" Link="UI\SearchGrid.resx" />
+		<EmbeddedResource Include="..\WinForms.Shared\SearchGrid\SearchGrid.resx" Link="UI\SearchGrid.resx">
+			<LogicalName>AlphaOmega.Windows.Forms.SearchGrid.resources</LogicalName>
+		</EmbeddedResource>
 	</ItemGroup>
 </Project>
