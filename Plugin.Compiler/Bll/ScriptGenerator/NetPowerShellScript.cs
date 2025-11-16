@@ -74,11 +74,11 @@ finally {
 			List<String> references = new List<String>();
 			foreach(String assembly in this._references)
 				if(File.Exists(assembly))
-					references.Add(@$"
-<Reference Include=""{Path.GetFileNameWithoutExtension(assembly)}"">
-	<HintPath>{assembly}</HintPath>
+					references.Add(String.Format(@"
+<Reference Include=""{0}"">
+	<HintPath>{1}</HintPath>
 </Reference>
-");
+", Path.GetFileNameWithoutExtension(assembly), assembly));
 			String script = ScriptArgs2
 				.Replace("{Assemblies}", String.Join("", references.ToArray()))
 				.Replace("{SourceCode}",Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(this._sourceCode)));

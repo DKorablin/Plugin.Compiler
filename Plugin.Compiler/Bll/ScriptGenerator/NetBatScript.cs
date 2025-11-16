@@ -61,11 +61,11 @@ exit /b 0
 			List<String> references = new List<String>();
 			foreach(String assembly in this._references)
 				if(File.Exists(assembly))
-					references.Add(@$"
-	echo		^<Reference Include=""{Path.GetFileNameWithoutExtension(assembly)}""^>
-	echo			^<HintPath^>{assembly}^</HintPath^>
+					references.Add(String.Format(@"
+	echo		^<Reference Include=""{0}""^>
+	echo			^<HintPath^>{1}^</HintPath^>
 	echo		^</Reference^>
-");
+", Path.GetFileNameWithoutExtension(assembly), assembly));
 			String scriptHeader = ScriptArgs1.Replace("{Assemblies}", String.Join("", references.ToArray()));
 			return scriptHeader + this._sourceCode;
 		}

@@ -4,6 +4,8 @@ using System.IO;
 using System.Reflection;
 using SAL.Flatbed;
 using System.Linq;
+using AlphaOmega.Reflection;
+
 #if NETFRAMEWORK
 using System.CodeDom.Compiler;
 #else
