@@ -29,14 +29,17 @@
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
+			System.Windows.Forms.TabPage tabDotnet;
 			System.Windows.Forms.TabPage tabGac;
 			System.Windows.Forms.ContextMenuStrip cmsGac;
 			System.Windows.Forms.TabPage tabPlugins;
 			System.Windows.Forms.TabPage tabBrowse;
 			System.Windows.Forms.Button bnCancel;
 			System.Windows.Forms.Button bnOk;
-			this.gridSearch = new AlphaOmega.Windows.Forms.SearchGrid();
+			this.searchGac = new AlphaOmega.Windows.Forms.SearchGrid();
+			this.searchNet = new AlphaOmega.Windows.Forms.SearchGrid();
 			this.lvGac = new System.Windows.Forms.ListView();
+			this.lvDotnet = new System.Windows.Forms.ListView();
 			this.tsmiCopy = new System.Windows.Forms.ToolStripMenuItem();
 			this.tvPlugins = new AlphaOmega.Windows.Forms.AssemblyTreeView();
 			this.lvBrowse = new System.Windows.Forms.ListView();
@@ -45,13 +48,16 @@
 			this.tsmiBrowse = new System.Windows.Forms.ToolStripMenuItem();
 			this.tsmiRemove = new System.Windows.Forms.ToolStripMenuItem();
 			this.bgGac = new System.ComponentModel.BackgroundWorker();
+			this.bgDotnet = new System.ComponentModel.BackgroundWorker();
 			this.tabMain = new System.Windows.Forms.TabControl();
+			tabDotnet = new System.Windows.Forms.TabPage();
 			tabGac = new System.Windows.Forms.TabPage();
 			cmsGac = new System.Windows.Forms.ContextMenuStrip(this.components);
 			tabPlugins = new System.Windows.Forms.TabPage();
 			tabBrowse = new System.Windows.Forms.TabPage();
 			bnCancel = new System.Windows.Forms.Button();
 			bnOk = new System.Windows.Forms.Button();
+			tabDotnet.SuspendLayout();
 			tabGac.SuspendLayout();
 			cmsGac.SuspendLayout();
 			tabPlugins.SuspendLayout();
@@ -60,9 +66,37 @@
 			this.tabMain.SuspendLayout();
 			this.SuspendLayout();
 			// 
+			// tabDotnet
+			// 
+			tabDotnet.Controls.Add(this.searchNet);
+			tabDotnet.Controls.Add(this.lvDotnet);
+			tabDotnet.Location = new System.Drawing.Point(4, 22);
+			tabDotnet.Name = "tabDotnet";
+			tabDotnet.Padding = new System.Windows.Forms.Padding(3);
+			tabDotnet.Size = new System.Drawing.Size(440, 187);
+			tabDotnet.TabIndex = 3;
+			tabDotnet.Text = ".NET";
+			tabDotnet.UseVisualStyleBackColor = true;
+			// 
+			// searchNet
+			// 
+			this.searchNet.DataGrid = null;
+			this.searchNet.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.searchNet.EnableFindCase = true;
+			this.searchNet.EnableFindHighlight = true;
+			this.searchNet.EnableFindPrevNext = true;
+			this.searchNet.EnableSearchHighlight = false;
+			this.searchNet.ListView = null;
+			this.searchNet.Location = new System.Drawing.Point(3, 155);
+			this.searchNet.Name = "searchNet";
+			this.searchNet.Size = new System.Drawing.Size(440, 29);
+			this.searchNet.TabIndex = 1;
+			this.searchNet.TreeView = null;
+			this.searchNet.Visible = false;
+			// 
 			// tabGac
 			// 
-			tabGac.Controls.Add(this.gridSearch);
+			tabGac.Controls.Add(this.searchGac);
 			tabGac.Controls.Add(this.lvGac);
 			tabGac.Location = new System.Drawing.Point(4, 22);
 			tabGac.Name = "tabGac";
@@ -72,21 +106,21 @@
 			tabGac.Text = "GAC";
 			tabGac.UseVisualStyleBackColor = true;
 			// 
-			// gridSearch
+			// searchGac
 			// 
-			this.gridSearch.DataGrid = null;
-			this.gridSearch.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.gridSearch.EnableFindCase = true;
-			this.gridSearch.EnableFindHighlight = true;
-			this.gridSearch.EnableFindPrevNext = true;
-			this.gridSearch.EnableSearchHighlight = false;
-			this.gridSearch.ListView = null;
-			this.gridSearch.Location = new System.Drawing.Point(3, 155);
-			this.gridSearch.Name = "gridSearch";
-			this.gridSearch.Size = new System.Drawing.Size(440, 29);
-			this.gridSearch.TabIndex = 1;
-			this.gridSearch.TreeView = null;
-			this.gridSearch.Visible = false;
+			this.searchGac.DataGrid = null;
+			this.searchGac.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.searchGac.EnableFindCase = true;
+			this.searchGac.EnableFindHighlight = true;
+			this.searchGac.EnableFindPrevNext = true;
+			this.searchGac.EnableSearchHighlight = false;
+			this.searchGac.ListView = null;
+			this.searchGac.Location = new System.Drawing.Point(3, 155);
+			this.searchGac.Name = "searchGac";
+			this.searchGac.Size = new System.Drawing.Size(440, 29);
+			this.searchGac.TabIndex = 1;
+			this.searchGac.TreeView = null;
+			this.searchGac.Visible = false;
 			// 
 			// lvGac
 			// 
@@ -103,6 +137,22 @@
 			this.lvGac.TabIndex = 0;
 			this.lvGac.UseCompatibleStateImageBehavior = false;
 			this.lvGac.View = System.Windows.Forms.View.Details;
+			// 
+			// lvDotnet
+			// 
+			this.lvDotnet.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+			| System.Windows.Forms.AnchorStyles.Left)
+			| System.Windows.Forms.AnchorStyles.Right)));
+			this.lvDotnet.ContextMenuStrip = cmsGac;
+			this.lvDotnet.FullRowSelect = true;
+			this.lvDotnet.HideSelection = false;
+			this.lvDotnet.Location = new System.Drawing.Point(3, 3);
+			this.lvDotnet.Name = "lvDotnet";
+			this.lvDotnet.Size = new System.Drawing.Size(434, 151);
+			this.lvDotnet.Sorting = System.Windows.Forms.SortOrder.Ascending;
+			this.lvDotnet.TabIndex = 0;
+			this.lvDotnet.UseCompatibleStateImageBehavior = false;
+			this.lvDotnet.View = System.Windows.Forms.View.Details;
 			// 
 			// cmsGac
 			// 
@@ -220,12 +270,18 @@
 			this.bgGac.DoWork += new System.ComponentModel.DoWorkEventHandler(this.bgGac_DoWork);
 			this.bgGac.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.bgGac_RunWorkerCompleted);
 			// 
+			// bgDotnet
+			// 
+			this.bgDotnet.DoWork += new System.ComponentModel.DoWorkEventHandler(this.bgDotnet_DoWork);
+			this.bgDotnet.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.bgDotnet_RunWorkerCompleted);
+			// 
 			// tabMain
 			// 
 			this.tabMain.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.tabMain.Controls.Add(tabGac);
+			this.tabMain.Controls.Add(tabDotnet);
 			this.tabMain.Controls.Add(tabPlugins);
 			this.tabMain.Controls.Add(tabBrowse);
 			this.tabMain.Location = new System.Drawing.Point(12, 12);
@@ -255,6 +311,7 @@
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Add Reference";
+			tabDotnet.ResumeLayout(false);
 			tabGac.ResumeLayout(false);
 			cmsGac.ResumeLayout(false);
 			tabPlugins.ResumeLayout(false);
@@ -268,15 +325,18 @@
 		#endregion
 
 		private System.Windows.Forms.ListView lvGac;
+		private System.Windows.Forms.ListView lvDotnet;
+		private System.Windows.Forms.ListView lvBrowse;
 		private System.Windows.Forms.TabControl tabMain;
 		private AlphaOmega.Windows.Forms.AssemblyTreeView tvPlugins;
 		private System.Windows.Forms.ToolStripMenuItem tsmiRemove;
 		private System.Windows.Forms.ToolStripMenuItem tsmiBrowse;
-		private System.Windows.Forms.ListView lvBrowse;
 		private System.Windows.Forms.ColumnHeader colPath;
 		private System.Windows.Forms.ToolStripMenuItem tsmiCopy;
-		private AlphaOmega.Windows.Forms.SearchGrid gridSearch;
+		private AlphaOmega.Windows.Forms.SearchGrid searchGac;
+		private AlphaOmega.Windows.Forms.SearchGrid searchNet;
 		private System.ComponentModel.BackgroundWorker bgGac;
+		private System.ComponentModel.BackgroundWorker bgDotnet;
 		private System.Windows.Forms.ContextMenuStrip cmsBrowse;
 	}
 }

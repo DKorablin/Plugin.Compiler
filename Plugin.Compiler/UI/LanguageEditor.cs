@@ -1,5 +1,4 @@
 ﻿using System;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using AlphaOmega.Design;
 using Plugin.Compiler.Bll;
@@ -13,10 +12,9 @@ namespace Plugin.Compiler.UI
 		/// <returns>Available compilation languages</returns>
 		protected override IEnumerable<ListBoxItem> GetValues()
 		{
-			DynamicCompiler compiler = new DynamicCompiler();
-			foreach(CompilerInfo info in compiler.GetSupportedCompilers())
+			foreach(CompilerInfo2 info in CompilerInfo2.GetSupportedCompilers())
 			{
-				String language = compiler.GetSupportedLanguage(info);
+				String language = info.GetSupportedLanguage();
 				yield return new ListBoxItem(language, language);
 			}
 		}

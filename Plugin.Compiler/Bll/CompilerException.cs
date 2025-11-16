@@ -9,7 +9,7 @@ using Microsoft.CodeAnalysis;
 
 namespace Plugin.Compiler.Bll
 {
-	internal class CompilerException : ApplicationException
+	internal sealed class CompilerException : ApplicationException
 	{
 		public String SourceCode { get; private set; }
 #if NETFRAMEWORK

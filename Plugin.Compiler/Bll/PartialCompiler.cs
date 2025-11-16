@@ -1,7 +1,4 @@
 ﻿using System;
-#if NETFRAMEWORK
-using System.CodeDom.Compiler;
-#endif
 using System.Text;
 using SAL.Flatbed;
 
@@ -25,42 +22,29 @@ namespace Plugin.Compiler.Bll
 		/// <summary>Get source code for compilation</summary>
 		/// <returns>Source code for compilation</returns>
 		protected override String GetSourceCode()
-			=> this.GetFullSourceCode();
+			=> this.IsFullSourceCode
+				? this.SourceCode
+				: this.GetFullSourceCode(CompilerInfo2.GetSupportedCompiler(this.LanguageId).GetSupportedLanguage(), this.SourceCode);
 
-#if NETFRAMEWORK
 		/// <summary>Get the full source code that will be compiled and executed</summary>
 		/// <param name="languageId">The compiler identifier used to compile the code</param>
 		/// <param name="sourceCode">The custom source code that will be wrapped</param>
 		/// <returns>The full source code to compile</returns>
 		public String GetFullSourceCode(Int32 languageId, String sourceCode)
 		{
-			var infoObj = this.GetSupportedCompiler(languageId);
+			var infoObj = CompilerInfo2.GetSupportedCompiler(languageId);
 			if(infoObj == null)
 				throw new ArgumentException(nameof(languageId), $"Supported compiler not found by languageId: {languageId}");
-			CompilerInfo info = infoObj;
+			CompilerInfo2 info = infoObj;
 			return this.GetFullSourceCode(info, sourceCode);
 		}
-#endif
 
-		/// <summary>Get the full source code</summary>
-		/// <returns>Full source code for compilation</returns>
-		public String GetFullSourceCode()
-			=> this.IsFullSourceCode
-				? this.SourceCode
-#if NETFRAMEWORK
-				: this.GetFullSourceCode(this.GetSupportedLanguage(this.GetSupportedCompiler(this.LanguageId)), this.SourceCode);
-#else
-				: this.GetFullSourceCode("CS", this.SourceCode);
-#endif
-
-#if NETFRAMEWORK
 		/// <summary>Get the full source code that will be compiled and executed</summary>
 		/// <param name="info">Information about the compiler used to compile the code</param>
 		/// <param name="sourceCode">Custom source code that will be wrapped</param>
 		/// <returns>The full source code to compile</returns>
-		public String GetFullSourceCode(CompilerInfo info, String sourceCode)
-			=> this.GetFullSourceCode(this.GetSupportedLanguage(info), sourceCode);
-#endif
+		public String GetFullSourceCode(CompilerInfo2 info, String sourceCode)
+			=> this.GetFullSourceCode(info.GetSupportedLanguage(), sourceCode);
 
 		/// <summary>Get the full source code that will be compiled and executed</summary>
 		/// <param name="language">The language the source code is written in</param>
@@ -87,9 +71,9 @@ namespace Plugin.Compiler.Bll
 
 		/// <summary>Get code for saving to a batch file</summary>
 		/// <returns>Formatted code for execution by batch</returns>
-		public override String GetBatchCode()
+		public String GetBatchCode()
 		{
-			String sourceCodeWithHeader = base.GetBatchCode();
+			String sourceCodeWithHeader = this.GetSourceCode();
 
 			StringBuilder namespaces = new StringBuilder();
 			foreach(String asm in this.References)
@@ -97,7 +81,7 @@ namespace Plugin.Compiler.Bll
 					namespaces.AppendLine(String.Format(Constant.NamespaceTemplateArgs1, ns));
 
 			String runner = Constant.Code.FormatCodeTemplate(
-				Constant.Code.Batch.RunnerArg4,
+				Constant.Code.BatFramework.ProgramMainArg4,
 				namespaces.ToString(),
 				this.ClassName,
 				String.Empty,

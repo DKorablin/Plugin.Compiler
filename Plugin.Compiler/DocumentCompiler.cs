@@ -13,7 +13,8 @@ using Plugin.Compiler.UI;
 using Plugin.Compiler.Xml;
 using SAL.Flatbed;
 using SAL.Windows;
-using System.Linq; // For roslyn diagnostics
+using System.Linq;
+using Plugin.Compiler.Bll.ScriptGenerator; // For roslyn diagnostics
 
 namespace Plugin.Compiler
 {
@@ -38,6 +39,7 @@ namespace Plugin.Compiler
 					tsbnFullSource.Checked = this._compiler.IsFullSourceCode;
 					tsbnDebug.Checked = this._compiler.IsIncludeDebugInfo;
 					tsddlLanguages.SelectedIndex = this._compiler.LanguageId;
+
 					txtSource.Text = this._compiler.SourceCode;
 					this.SelectedCompilerVersion = this._compiler.CompilerVersion;
 					this.ReloadReferences();
@@ -82,7 +84,7 @@ namespace Plugin.Compiler
 		private ComboListItem SelectedLanguage => (ComboListItem)tsddlLanguages.SelectedItem;
 
 		/// <summary>The selected compiler in the list of compilers</summary>
-		private CompilerInfo SelectedCompiler => this.SelectedLanguage.Tag;
+		private CompilerInfo2 SelectedCompiler => this.SelectedLanguage.Tag;
 
 		/// <summary>The selected compiler version in the list of compilers</summary>
 		private String SelectedCompilerVersion
@@ -96,8 +98,22 @@ namespace Plugin.Compiler
 			}
 			set
 			{
+				Boolean found = false;
 				foreach(ToolStripMenuItem item in tsbnCompilerVersion.DropDownItems)
+				{
 					item.Checked = ((String)item.Tag) == value;
+					if(item.Checked)
+						found = true;
+				}
+
+				if(!found)//For example when code written for .NET Framework is opened in .NET
+					foreach(ToolStripMenuItem item in tsbnCompilerVersion.DropDownItems)
+					{
+						item.Checked = ((String)item.Tag) == RuntimeUtils.CurrentRuntimeVersion;
+						if(item.Checked)
+							break;
+					}
+
 				this.Compiler.CompilerVersion = value;
 			}
 		}
@@ -122,13 +138,14 @@ namespace Plugin.Compiler
 
 			this._compiler = new PartialCompiler(this.Plugin);
 
-			foreach(String version in DynamicCompiler.GetFrameworkVersions())
-				tsbnCompilerVersion.DropDownItems.Add(new ToolStripMenuItem($"Microsoft .NET {version}") { Tag = version, CheckOnClick = true, Checked = version == Constant.DefaultCompilerVersion, });
+			var currentVersion = RuntimeUtils.CurrentRuntimeVersion;
+			foreach(String version in RuntimeUtils.GetInstalledFrameworkVersions())
+				tsbnCompilerVersion.DropDownItems.Add(new ToolStripMenuItem(version) { Tag = version, CheckOnClick = true, Checked = version == currentVersion, });
 
 			String language = this.Plugin.Settings.DefaultCompilerLanguage;
-			foreach(CompilerInfo info in this.Compiler.GetSupportedCompilers())
+			foreach(CompilerInfo2 info in CompilerInfo2.GetSupportedCompilers())
 			{
-				ComboListItem item = new ComboListItem(this.Compiler.GetSupportedLanguage(info)) { Tag = info, };
+				ComboListItem item = new ComboListItem(info);
 				Int32 index = tsddlLanguages.Items.Add(item);
 				if(language == null)
 					language = item.Text;
@@ -254,10 +271,7 @@ namespace Plugin.Compiler
 		{
 			foreach(ToolStripMenuItem item in tsbnCompilerVersion.DropDownItems)
 				if(item != e.ClickedItem)
-				{
 					item.Checked = false;
-					break;
-				}
 
 			this.Compiler.CompilerVersion = e.ClickedItem.Tag.ToString();
 		}
@@ -296,18 +310,19 @@ namespace Plugin.Compiler
 						this.Plugin.Trace.TraceEvent(TraceEventType.Information, 10, result.ToString());
 				} else if(e.ClickedItem == tsmiBuild)
 				{//Compile and save the assembly to disk
-					using(SaveFileDialog dlg = new SaveFileDialog() { OverwritePrompt = true, AddExtension = true, FileName = this.Compiler.CompiledAssemblyFilePath, DefaultExt = "dll", Filter = "DLL file (*.dll)|*.dll|Batch file (*.bat)|*.bat", })
+					using(SaveFileDialog dlg = new SaveFileDialog() { OverwritePrompt = true, AddExtension = true, FileName = this.Compiler.CompiledAssemblyFilePath, DefaultExt = "dll", Filter = "DLL file (*.dll)|*.dll|Batch .NET Framework file (*.bat)|*.bat|Batch .NET file (*.bat)|*.bat|PowerShell .NET Framework file (*.ps1)|*.ps1|PowerShell .NET file (*.ps1)|*.ps1", })
 						if(dlg.ShowDialog() == DialogResult.OK)
 						{
-							switch(dlg.FilterIndex)
+							switch((ScriptType)dlg.FilterIndex)
 							{
-							case 1://.dll
+							case ScriptType.Assembly://.dll
 								this.Compiler.CompiledAssemblyFilePath = dlg.FileName;
 								this.Compiler.CompileAssembly();
 								break;
-							case 2://.bat
-								String batFile = this.Compiler.GetBatchCode();
-								File.WriteAllText(dlg.FileName, batFile);
+							default:
+								var factory = new ScriptGeneratorFactory((ScriptType)dlg.FilterIndex);
+								var script = factory.GenerateScript(this.Compiler.References, this.Compiler.GetBatchCode());
+								File.WriteAllText(dlg.FileName, script);
 								break;
 							}
 						}
@@ -401,7 +416,7 @@ namespace Plugin.Compiler
 
 		private void tsbnAssemblies_ButtonClick(Object sender, EventArgs e)
 		{
-			using(AssemblyReferenceDlg dlg = new AssemblyReferenceDlg(this.Plugin))
+			using(AssemblyReferenceDlg dlg = new AssemblyReferenceDlg(this.Plugin, this.SelectedCompilerVersion))
 				if(dlg.ShowDialog() == DialogResult.OK)
 				{
 					foreach(String assembly in dlg.SelectedAssemblies)
