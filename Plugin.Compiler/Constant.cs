@@ -11,8 +11,7 @@ namespace Plugin.Compiler
 			/// <summary>Execute a dynamic method</summary>
 			public const String InvokeDynamicMethod = "InvokeDynamicMethod";
 		}
-		/// <summary>Default compilation version</summary>
-		public const String DefaultCompilerVersion = "v2.0";
+
 		public const String SettingsFileName = "Plugin.Compiler.xml";
 		public const String NamespaceTemplateArgs1 = @"using {0};";
 
@@ -75,25 +74,10 @@ public static class {Namespace}
 	}
 }";
 
-			public static class Batch
+			public static class BatFramework
 			{
-				/// <summary>BAT file header for dynamic compilation</summary>
-				public const String CompilerArgs1 = @"
-/*
-@echo off && cls
-set WinDirNet=%WinDir%\Microsoft.NET\Framework
-IF EXIST ""%WinDirNet%\v2.0.50727\csc.exe"" set csc=""%WinDirNet%\v2.0.50727\csc.exe""
-IF EXIST ""%WinDirNet%\v3.5\csc.exe"" set csc=""%WinDirNet%\v3.5\csc.exe""
-IF EXIST ""%WinDirNet%\v4.0.30319\csc.exe"" set csc=""%WinDirNet%\v4.0.30319\csc.exe""
-%csc% /nologo {Assemblies} /out:""%~0.exe"" %0
-""%~0.exe""
-del ""%~0.exe""
-PAUSE
-exit
-*/
-";
-				/// <summary>Template for launching a wrapper in a bat file</summary>
-				public const String RunnerArg4 = @"
+				/// <summary>Template for launching a wrapper in a script file</summary>
+				public const String ProgramMainArg4 = @"
 class Program
 {
 	static void Main(String[] args) { new {Namespace}.{ClassName}().{MethodName}(args); }
@@ -108,7 +92,7 @@ class Program
 				Int32 index = 0;
 				String arguments = argumentsType == null
 					? "params Object[] args"
-					: String.Join(",", Array.ConvertAll(argumentsType, delegate(String arg) { return arg + " a" + (index++); }));
+					: String.Join(",", Array.ConvertAll(argumentsType, arg => arg + " a" + (index++)));
 
 				return template
 					.Replace("{Using}", namespaces)//Pluggable namespaces

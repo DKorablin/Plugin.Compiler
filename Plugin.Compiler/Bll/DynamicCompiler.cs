@@ -1,15 +1,14 @@
 ﻿using System;
-#if NETFRAMEWORK
-using System.CodeDom.Compiler;
-#endif
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using AlphaOmega.Reflection;
-using Microsoft.Win32;
 using SAL.Flatbed;
-#if !NETFRAMEWORK
 using System.Linq;
+using AlphaOmega.Reflection;
+
+#if NETFRAMEWORK
+using System.CodeDom.Compiler;
+#else
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 #endif
@@ -44,7 +43,7 @@ namespace Plugin.Compiler.Bll
 				Int32 index = 0;
 				String arguments = this.ArgumentsType == null
 					? "params Object[] args"
-					: String.Join(",", Array.ConvertAll(this.ArgumentsType, delegate(String arg) { return arg + " a" + (index++); }));
+					: String.Join(",", Array.ConvertAll(this.ArgumentsType, arg => arg + " a" + (index++)));
 				return returnName + " " + this.ClassName + "(" + arguments + ")";
 			}
 		}
@@ -72,7 +71,7 @@ namespace Plugin.Compiler.Bll
 		/// <remarks>By default, v2.0 is used</remarks>
 		public String CompilerVersion
 		{
-			get => this._compilerVersion ?? Constant.DefaultCompilerVersion;
+			get => this._compilerVersion ?? RuntimeUtils.CurrentRuntimeVersion;
 			set => this._compilerVersion = value;
 		}
 
@@ -96,99 +95,24 @@ namespace Plugin.Compiler.Bll
 		}
 
 		#region Methods
-		/// <summary>Get an array of installed framework versions</summary>
-		/// <returns>Array of installed version numbers</returns>
-		public static IEnumerable<String> GetFrameworkVersions()
-		{
-			RegistryKey componentsKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Net Framework Setup\NDP\");
-			foreach(String keyName in componentsKey.GetSubKeyNames())
-				if(keyName.StartsWith("v") && keyName.Contains("."))
-					if(keyName.Split('.').Length > 2)
-						yield return keyName.Substring(0, keyName.LastIndexOf('.'));
-					else
-						yield return keyName;
-		}
-
-#if NETFRAMEWORK
-		/// <summary>Get a list of supported compilers</summary>
-		public CompilerInfo[] GetSupportedCompilers()
-			=> CodeDomProvider.GetAllCompilerInfo();
-
-		/// <summary>Get a supported compiler</summary>
-		public CompilerInfo GetSupportedCompiler(Int32 index)
-		{
-			CompilerInfo[] compilers = this.GetSupportedCompilers();
-			return compilers.Length > index ? compilers[index] : null;
-		}
-
-		/// <summary>Get the supported language from the compiler information</summary>
-		/// <param name="compiler">Compiler information</param>
-		/// <returns>Language name from the compiler information</returns>
-		public String GetSupportedLanguage(CompilerInfo info)
-		{
-			String[] names = info.GetLanguages();
-			Int32 length = names.Length;
-			return length > 0 ? names[length - 1] : String.Empty;
-		}
-
-		/// <summary>Get a list of supported languages</summary>
-		/// <returns>Array of languages ​​supported by the compiler</returns>
-		public IEnumerable<String> GetSupportedLanguages()
-		{
-			CompilerInfo[] languages = this.GetSupportedCompilers();
-			foreach(var language in languages)
-			{
-				String[] names = language.GetLanguages();
-				if(names.Length > 0)
-					yield return names[names.Length - 1];
-			}
-		}
-#else
-		// Roslyn only supports C# here.
-		public object[] GetSupportedCompilers() => new object[0];
-		public object GetSupportedCompiler(Int32 index) => null;
-		public String GetSupportedLanguage(object _) => "CS";
-		public IEnumerable<String> GetSupportedLanguages() { yield return "CS"; }
-#endif
-
 		/// <summary>Compile the assembly</summary>
 		/// <returns>Resulting assembly</returns>
 		public Assembly CompileAssembly()
 		{//TODO: Not thread safe
 			Assembly result;
-#if NETFRAMEWORK
-			CompilerInfo info = this.GetSupportedCompiler(this.LanguageId);
-#else
-			object info = null;
-#endif
 			String sourceCode = this.GetSourceCode();
 
 			result = DynamicCompiler.AssemblyLinks.TryGet(sourceCode);
 			if(result == null)
 			{
 #if NETFRAMEWORK
-				result = this.CompileAssembly(info as CompilerInfo, sourceCode);
+				result = this.CompileAssembly(sourceCode);
 #else
 				result = this.CompileAssemblyRoslyn(sourceCode);
 #endif
 				DynamicCompiler.AssemblyLinks.Add(sourceCode, result);
 			}
 			return result;
-		}
-
-		/// <summary>Save the source code as a batch file</summary>
-		public virtual String GetBatchCode()
-		{
-			List<String> references = new List<String>();
-
-			foreach(String assembly in this.References)
-				if(File.Exists(assembly))//Physical file
-					references.Add("/reference=\"" + assembly + '\"');
-
-			String batchHeader = Constant.Code.Batch.CompilerArgs1.Replace("{Assemblies}", String.Join(" ", references.ToArray()));
-
-			String sourceCode = this.GetSourceCode();
-			return batchHeader + sourceCode;
 		}
 
 		/// <summary>Compile and run the build</summary>
@@ -208,13 +132,12 @@ namespace Plugin.Compiler.Bll
 
 #if NETFRAMEWORK
 		/// <summary>Compile an assembly from a class written entirely by the user</summary>
-		/// <param name="language">The language in which the code is written</param>
-		/// <param name="fullCode">The full source code for generating the assembly</param>
+		/// <param name="sourceCode">The full source code for generating the assembly</param>
 		/// <returns>The generated assembly</returns>
-		private Assembly CompileAssembly(CompilerInfo info, String sourceCode)
+		private Assembly CompileAssembly(String sourceCode)
 		{
-			if(info == null)
-				throw new InvalidOperationException("CompilerInfo is null");
+			CompilerInfo info = CompilerInfo2.GetSupportedCompiler(this.LanguageId)?.CompilerInfo
+				?? throw new InvalidOperationException("CompilerInfo is null");
 
 			if(!String.IsNullOrEmpty(this.CompilerVersion))
 			{//Setting the compiler version. Because of .NET 5+ I have to change this object type from property to field
@@ -247,7 +170,6 @@ namespace Plugin.Compiler.Bll
 				parameters.OutputAssembly = this.CompiledAssemblyFilePath;
 				parameters.MainClass = Constant.Code.NamespaceName + "." + this.ClassName;
 
-				//TODO: It's not working after .NET 5+. See: https://stackoverflow.com/questions/73793505/system-platformnotsupportedexception-compiling-c-sharp-code-at-runtime-net-core
 				CompilerResults result = compiler.CompileAssemblyFromSource(parameters, sourceCode);
 				if(result.Errors.HasErrors)
 					throw new CompilerException(sourceCode, result);
@@ -256,16 +178,35 @@ namespace Plugin.Compiler.Bll
 			}
 		}
 #else
-		// Roslyn compilation for .NET 8+
+		private static LanguageVersion GetLanguageVersion(String frameworkVersion)
+		{
+			if(String.IsNullOrEmpty(frameworkVersion))
+				return LanguageVersion.Latest;
+
+			// Parse version number
+			if(Version.TryParse(frameworkVersion.TrimStart('v').Split('-')[0], out Version version))
+			{
+				if(version.Major >= 8) return LanguageVersion.CSharp12;
+				if(version.Major >= 7) return LanguageVersion.CSharp11;
+				if(version.Major >= 6) return LanguageVersion.CSharp10;
+				if(version.Major >= 5) return LanguageVersion.CSharp9;
+			}
+
+			return LanguageVersion.Latest;
+		}
+
 		private Assembly CompileAssemblyRoslyn(String sourceCode)
 		{
-			var syntaxTree = CSharpSyntaxTree.ParseText(sourceCode);
+			LanguageVersion langVersion = GetLanguageVersion(this.CompilerVersion);
+
+			var parseOptions = CSharpParseOptions.Default.WithLanguageVersion(langVersion);
+			var syntaxTree = CSharpSyntaxTree.ParseText(sourceCode, parseOptions);
 
 			List<MetadataReference> references = new List<MetadataReference>();
 			// Add core assemblies
 			Assembly[] coreAssemblies = new[]
 			{
-				typeof(object).Assembly,
+				typeof(Object).Assembly,
 				typeof(Console).Assembly,
 				typeof(Enumerable).Assembly
 			};
@@ -279,17 +220,16 @@ namespace Plugin.Compiler.Bll
 					path = Path.GetFullPath(assembly);
 				else if(assembly.Contains(","))
 				{
-					try { path = Assembly.Load(assembly).Location; } catch { }
+					path = Assembly.Load(assembly).Location;
 					if(String.IsNullOrEmpty(path))
 					{
 						String simpleName = assembly.Substring(0, assembly.IndexOf(','));
-						try { path = Assembly.Load(simpleName).Location; } catch { }
+						path = Assembly.Load(simpleName).Location;
 					}
 				}
 				else
-				{
-					try { path = Assembly.Load(assembly).Location; } catch { }
-				}
+					path = Assembly.Load(assembly).Location;
+
 				if(!String.IsNullOrEmpty(path) && File.Exists(path))
 					references.Add(MetadataReference.CreateFromFile(path));
 			}
@@ -298,7 +238,10 @@ namespace Plugin.Compiler.Bll
 				this.ClassName + "_" + Guid.NewGuid().ToString("N"),
 				new[] { syntaxTree },
 				references,
-				new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+				new CSharpCompilationOptions(
+					OutputKind.DynamicallyLinkedLibrary,
+					optimizationLevel: this.IsIncludeDebugInfo ? OptimizationLevel.Debug : OptimizationLevel.Release
+				));
 
 			using(var ms = new MemoryStream())
 			{
@@ -308,6 +251,12 @@ namespace Plugin.Compiler.Bll
 					throw new CompilerException(sourceCode, emitResult.Diagnostics);
 				}
 				ms.Position = 0;
+				if(!String.IsNullOrWhiteSpace(this.CompiledAssemblyFilePath))
+					using(var fs = new FileStream(this.CompiledAssemblyFilePath, FileMode.Create, FileAccess.Write))
+					{
+						ms.CopyTo(fs);
+						ms.Position = 0;
+					}
 				return Assembly.Load(ms.ToArray());
 			}
 		}
@@ -346,6 +295,6 @@ namespace Plugin.Compiler.Bll
 				throw new InvalidOperationException($"Method: {fullMethodName} does not expect parameters {argsName}");
 			}
 		}
-		#endregion Methods
+#endregion Methods
 	}
 }

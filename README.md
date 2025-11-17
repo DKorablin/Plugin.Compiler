@@ -13,6 +13,7 @@ Minor hotfixes often require recompiling and redeploying many assemblies. This p
 - Support partial (incremental) compilation workflows
 - Persist compiled assemblies and linkage info for future runs
 - Simple WinForms editors for code, references, and search/navigation
+- Export code to Batch or PowerShell scripts for external use
 
 ## Use Cases
 - Hotfix a method without full solution rebuild
@@ -25,7 +26,7 @@ Minor hotfixes often require recompiling and redeploying many assemblies. This p
 - UI: WinForms editors and dialogs for source + references
 - Shared: Reusable UI and reflection helpers
 
-## Getting Started
+## Installation
 To install the Runtime Compiler Plugin, follow these steps:
 1. Download the latest release from the [Releases](https://github.com/DKorablin/Plugin.Compiler/releases)
 2. Extract the downloaded ZIP file to a desired location.
