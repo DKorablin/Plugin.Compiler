@@ -36,7 +36,7 @@ exit
 			List<String> references = new List<String>();
 			foreach(String assembly in this._references)
 				if(File.Exists(assembly))//Physical file
-					references.Add("/reference=\"" + assembly + '\"');
+					references.Add("/reference:\"" + assembly + '\"');
 
 			String scriptHeader = ScriptArgs1.Replace("{Assemblies}", String.Join(" ", references.ToArray()));
 			return scriptHeader + this._sourceCode;

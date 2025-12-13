@@ -310,11 +310,20 @@ namespace Plugin.Compiler
 						this.Plugin.Trace.TraceEvent(TraceEventType.Information, 10, result.ToString());
 				} else if(e.ClickedItem == tsmiBuild)
 				{//Compile and save the assembly to disk
-					using(SaveFileDialog dlg = new SaveFileDialog() { OverwritePrompt = true, AddExtension = true, FileName = this.Compiler.CompiledAssemblyFilePath, DefaultExt = "dll", Filter = "DLL file (*.dll)|*.dll|Batch .NET Framework file (*.bat)|*.bat|Batch .NET file (*.bat)|*.bat|PowerShell .NET Framework file (*.ps1)|*.ps1|PowerShell .NET file (*.ps1)|*.ps1", })
+					using(SaveFileDialog dlg = new SaveFileDialog()
+					{
+						OverwritePrompt = true,
+						AddExtension = true,
+						FileName = this.Compiler.CompiledAssemblyFilePath,
+						DefaultExt = "dll",
+						Filter = "DLL file (*.dll)|*.dll|Batch .NET Framework file (*.bat)|*.bat|Batch .NET file (*.bat)|*.bat|PowerShell .NET Framework file (*.ps1)|*.ps1|PowerShell .NET file (*.ps1)|*.ps1",
+					})
 						if(dlg.ShowDialog() == DialogResult.OK)
 						{
 							switch((ScriptType)dlg.FilterIndex)
 							{
+							case ScriptType.Unknown:
+								throw new InvalidOperationException("Unknown script type selected.");
 							case ScriptType.Assembly://.dll
 								this.Compiler.CompiledAssemblyFilePath = dlg.FileName;
 								this.Compiler.CompileAssembly();
