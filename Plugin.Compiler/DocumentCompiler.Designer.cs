@@ -62,6 +62,7 @@
 			this.ilObjects = new System.Windows.Forms.ImageList(this.components);
 			this.txtMethodArgs = new System.Windows.Forms.TextBox();
 			this.tvReference = new AlphaOmega.Windows.Forms.AssemblyTreeView();
+			this.ctrlMessage = new Plugin.Compiler.UI.MessageCtrl();
 			cmsReference = new System.Windows.Forms.ContextMenuStrip(this.components);
 			cmsReference.SuspendLayout();
 			this.splitMain.Panel1.SuspendLayout();
@@ -146,6 +147,7 @@
 			// 
 			this.splitCode.Panel2.Controls.Add(this.txtSource);
 			this.splitCode.Panel2.Controls.Add(this.txtMethodArgs);
+			this.splitCode.Panel2.Controls.Add(this.ctrlMessage);
 			this.splitCode.Panel2.Controls.Add(this.toolStrip);
 			this.splitCode.Size = new System.Drawing.Size(532, 177);
 			this.splitCode.SplitterDistance = 177;
@@ -343,6 +345,17 @@
 			this.lvErrors.View = System.Windows.Forms.View.Details;
 			this.lvErrors.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lvErrors_MouseDoubleClick);
 			// 
+			// ctrlMessage
+			// 
+			this.ctrlMessage.BackColor = System.Drawing.Color.LightCyan;
+			this.ctrlMessage.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.ctrlMessage.Dock = System.Windows.Forms.DockStyle.Top;
+			this.ctrlMessage.Location = new System.Drawing.Point(0, 0);
+			this.ctrlMessage.Name = "ctrlMessage";
+			this.ctrlMessage.Size = new System.Drawing.Size(200, 29);
+			this.ctrlMessage.TabIndex = 0;
+			this.ctrlMessage.Visible = false;
+			// 
 			// colNumber
 			// 
 			this.colNumber.DisplayIndex = 1;
@@ -466,5 +479,6 @@
 		private System.Windows.Forms.ToolStripMenuItem tsmiSave;
 		private System.Windows.Forms.ToolStripMenuItem tsmiReferenceRemoveNamespace;
 		private System.Windows.Forms.TextBox txtMethodArgs;
+		private UI.MessageCtrl ctrlMessage;
 	}
 }
