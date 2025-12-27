@@ -14,7 +14,9 @@ using Plugin.Compiler.Xml;
 using SAL.Flatbed;
 using SAL.Windows;
 using System.Linq;
-using Plugin.Compiler.Bll.ScriptGenerator; // For roslyn diagnostics
+using Plugin.Compiler.Bll.ScriptGenerator;
+using System.Collections.Generic;
+using Plugin.Compiler.UI.Dto; // For roslyn diagnostics
 
 namespace Plugin.Compiler
 {
@@ -284,7 +286,7 @@ namespace Plugin.Compiler
 				if(source != null)
 					txtSource.Text = this.Compiler.GetFullSourceCode(this.SelectedLanguage.Text, source);
 				else
-					MessageBox.Show(Resources.wrnRemoveClassFormatting, this.Window.Caption);
+					ctrlMessage.ShowMessage(MessageCtrl.StatusMessageType.Failed, Resources.wrnRemoveClassFormatting);
 			}
 			this.Compiler.LanguageId = tsddlLanguages.SelectedIndex;
 		}
@@ -347,38 +349,19 @@ namespace Plugin.Compiler
 			} catch(CompilerException exc)
 			{
 				splitMain.Panel2Collapsed = false;
+				ErrorInfoItem[] errorDto;
 #if NETFRAMEWORK
-				ListViewItem[] items = new ListViewItem[exc.Result.Errors.Count];
-				for(Int32 loop = 0, count = items.Length;loop < count;loop++)
-				{
-					CompilerError error = exc.Result.Errors[loop];
-					ListViewItem item = new ListViewItem(error.ErrorNumber)
-					{
-						ImageIndex = error.IsWarning ? 0 : 1,
-					};
-					item.SubItems.Add(error.Line.ToString("n0"));
-					item.SubItems.Add(error.ErrorText);
-					items[loop] = item;
-				}
+				errorDto = exc.Result.Errors.Cast<CompilerError>().Select(err => new ErrorInfoItem(err.ErrorNumber, err.IsWarning, err.Line, err.ErrorText)).ToArray();
 #else
-				var diags = exc.Diagnostics.Where(d => d.Severity == Microsoft.CodeAnalysis.DiagnosticSeverity.Error || d.Severity == Microsoft.CodeAnalysis.DiagnosticSeverity.Warning).ToArray();
-				ListViewItem[] items = new ListViewItem[diags.Length];
-				for(Int32 loop = 0, count = items.Length;loop < count;loop++)
-				{
-					var d = diags[loop];
-					var span = d.Location.GetLineSpan();
-					Int32 line = span.IsValid ? span.StartLinePosition.Line + 1 : 0;
-					ListViewItem item = new ListViewItem(d.Id)
+				errorDto = exc.Diagnostics.Where(d => d.Severity == Microsoft.CodeAnalysis.DiagnosticSeverity.Error || d.Severity == Microsoft.CodeAnalysis.DiagnosticSeverity.Warning)
+					.Select(err =>
 					{
-						ImageIndex = d.Severity == Microsoft.CodeAnalysis.DiagnosticSeverity.Warning ? 0 : 1,
-					};
-					item.SubItems.Add(line.ToString("n0"));
-					item.SubItems.Add(d.GetMessage());
-					items[loop] = item;
-				}
+						var span = err.Location.GetLineSpan();
+						Int32 line = span.IsValid ? span.StartLinePosition.Line + 1 : 0;
+						return new ErrorInfoItem(err.Id, err.Severity == Microsoft.CodeAnalysis.DiagnosticSeverity.Warning, line, err.GetMessage());
+					}).ToArray();
 #endif
-				lvErrors.Items.AddRange(items);
-				lvErrors.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
+				this.ShowErrors(errorDto);
 			}
 		}
 
@@ -413,7 +396,7 @@ namespace Plugin.Compiler
 				: this.Compiler.TryToClearFullSource(txtSource.Text);
 
 			if(sourceCode == null)
-				MessageBox.Show(Resources.wrnRemoveClassFormatting, this.Window.Caption);
+				ctrlMessage.ShowMessage(MessageCtrl.StatusMessageType.Failed, Resources.wrnRemoveClassFormatting);
 
 			txtSource.Text = sourceCode;
 			this.Compiler.IsFullSourceCode = tsbnFullSource.Checked;
@@ -503,11 +486,20 @@ namespace Plugin.Compiler
 		{
 			if(lvErrors.SelectedItems.Count > 0 && tsbnFullSource.Checked)
 			{
-				Int32 lineNumber = Int32.Parse(lvErrors.SelectedItems[0].SubItems[colLine.Index].Text) - 1;
-				txtSource.Selection = txtSource.GetLine(lineNumber);
-				txtSource.DoSelectionVisible();
-				txtSource.Invalidate();
-
+				ErrorInfoItem err = (ErrorInfoItem)lvErrors.SelectedItems[0].Tag;
+				switch(err.ErrorNumber)
+				{
+				case "REF001":
+					if(MessageBox.Show("Do you want to remove incorrect reference?", err.Tag, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+						this.Compiler.References.RemoveAssembly(err.Tag);
+					break;
+				default:
+					Int32 lineNumber = err.Line - 1;
+					txtSource.Selection = txtSource.GetLine(lineNumber);
+					txtSource.DoSelectionVisible();
+					txtSource.Invalidate();
+					break;
+				}
 			}
 		}
 
@@ -574,10 +566,31 @@ namespace Plugin.Compiler
 					node.Tag = assembly;
 				} catch(Exception exc)
 				{
-					if(MessageBox.Show($"{exc.Message}{Environment.NewLine}Do you want to remove incorrect reference?", assembly, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-						this.Compiler.References.RemoveAssembly(assembly);
+					ErrorInfoItem error = new ErrorInfoItem(assembly, exc.Message);
+					this.ShowErrors(error);
 				}
 			}
+		}
+
+		private void ShowErrors(params ErrorInfoItem[] errors)
+		{
+			splitMain.Panel2Collapsed = false;
+			ListViewItem[] items = new ListViewItem[errors.Length];
+			for (Int32 loop = 0; loop < errors.Length; loop++)
+			{
+				ErrorInfoItem error = errors[loop];
+				ListViewItem item = new ListViewItem(error.ErrorNumber)
+				{
+					ImageIndex = error.IsWarning ? 0 : 1,
+				};
+				item.SubItems.Add(error.Line.ToString("n0"));
+				item.SubItems.Add(error.ErrorText);
+				item.Tag = error;
+				items[loop] = item;
+			}
+
+			lvErrors.Items.AddRange(items.ToArray());
+			lvErrors.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
 		}
 
 		private void OnSaveEvent()
