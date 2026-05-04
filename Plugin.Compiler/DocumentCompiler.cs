@@ -3,20 +3,19 @@ using System.CodeDom.Compiler;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using System.Xml;
 using AlphaOmega.Reflection;
 using AlphaOmega.Windows.Forms;
 using Plugin.Compiler.Bll;
+using Plugin.Compiler.Bll.ScriptGenerator;
 using Plugin.Compiler.Properties;
 using Plugin.Compiler.UI;
+using Plugin.Compiler.UI.Dto; // For roslyn diagnostics
 using Plugin.Compiler.Xml;
 using SAL.Flatbed;
 using SAL.Windows;
-using System.Linq;
-using Plugin.Compiler.Bll.ScriptGenerator;
-using System.Collections.Generic;
-using Plugin.Compiler.UI.Dto; // For roslyn diagnostics
 
 namespace Plugin.Compiler
 {
@@ -49,7 +48,7 @@ namespace Plugin.Compiler
 			}
 		}
 
-		private PluginWindows Plugin => (PluginWindows)this.Window.Plugin;
+		private PluginWindows Plugin => (PluginWindows)this.Window.Plugin.Instance;
 
 		private IWindow Window => (IWindow)base.Parent;
 

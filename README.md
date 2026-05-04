@@ -34,6 +34,7 @@ To install the Runtime Compiler Plugin, follow these steps:
 	- [Flatbed.Dialog](https://dkorablin.github.io/Flatbed-Dialog)
 	- [Flatbed.MDI](https://dkorablin.github.io/Flatbed-MDI)
 	- [Flatbed.MDI (WPF)](https://dkorablin.github.io/Flatbed-MDI-Avalon)
+	- [Flatbed.MDI (AvaloniaUI)](https://dkorablin.github.io/Flatbed-MDI-AvaloniaUI)
 
 ## Safety / Guidelines
 - Restrict usage to trusted administrators (runtime compilation can execute arbitrary code).
