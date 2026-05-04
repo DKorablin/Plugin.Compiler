@@ -11,12 +11,11 @@ namespace Plugin.Compiler
 {
 	public class PluginWindows : IPlugin, IPluginSettings<PluginSettings>
 	{
-		private TraceSource _trace;
 		private PluginSettings _settings;
 		private SettingsBll _settingsCompiler;
 		private Dictionary<String, DockState> _documentTypes;
 
-		internal TraceSource Trace => this._trace ?? (this._trace = PluginWindows.CreateTraceSource<PluginWindows>());
+		internal ITraceSource Trace { get; }
 
 		internal IHost Host { get; }
 
@@ -71,8 +70,11 @@ namespace Plugin.Compiler
 		}
 
 		#region Methods
-		public PluginWindows(IHost host)
-			=> this.Host = host ?? throw new ArgumentNullException(nameof(host));
+		public PluginWindows(IHost host, ITraceSource trace)
+		{
+			this.Host = host ?? throw new ArgumentNullException(nameof(host));
+			this.Trace = trace ?? throw new ArgumentNullException(nameof(trace));
+		}
 
 		public IWindow GetPluginControl(String typeName, Object args)
 			=> this.CreateWindow(typeName, false, args);
@@ -202,15 +204,6 @@ namespace Plugin.Compiler
 			=> this.DocumentTypes.TryGetValue(typeName, out DockState state)
 				? this.HostWindows.Windows.CreateWindow(this, typeName, searchForOpened, state, args)
 				: null;
-
-		private static TraceSource CreateTraceSource<T>(String name = null) where T : IPlugin
-		{
-			TraceSource result = new TraceSource(typeof(T).Assembly.GetName().Name + name);
-			result.Switch.Level = SourceLevels.All;
-			result.Listeners.Remove("Default");
-			result.Listeners.AddRange(System.Diagnostics.Trace.Listeners);
-			return result;
-		}
 		#endregion Methods
 	}
 }
